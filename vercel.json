@@ -1,7 +1,12 @@
 {
-  "buildCommand": "npm install zustand && npm run build",
+  "buildCommand": "npm run build",
   "installCommand": "npm install",
   "framework": "nextjs",
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
   "functions": {
     "src/app/r/[restaurantId]/menu/page.tsx": {
       "maxDuration": 30
@@ -9,5 +14,11 @@
     "src/app/r/[restaurantId]/item/[itemId]/page.tsx": {
       "maxDuration": 30
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }
