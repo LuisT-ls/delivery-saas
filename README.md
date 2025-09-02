@@ -58,7 +58,7 @@ vercel --prod
 ### Configurações do Vercel
 
 - Framework: Next.js
-- Node.js: 18.19.0
+- Node.js: 22.x
 - Build Command: `npm run build`
 - Output Directory: `.next`
 

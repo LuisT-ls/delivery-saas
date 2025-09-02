@@ -46,7 +46,7 @@ module.exports = nextConfig
 
 - Versões fixas das dependências
 - Adicionado `engines` para especificar versão do Node.js
-- Versão específica do Node.js: 18.19.0
+- Versão específica do Node.js: 22.x (atualizada para versão suportada pelo Vercel)
 
 #### tsconfig.json
 
@@ -130,7 +130,7 @@ navigator.serviceWorker.getRegistrations().then(registrations => {
 ### 7. Configurações Recomendadas do Vercel
 
 - **Framework Preset:** Next.js
-- **Node.js Version:** 18.x
+- **Node.js Version:** 22.x
 - **Build Command:** `npm run build`
 - **Output Directory:** `.next`
 - **Install Command:** `npm install`

@@ -20,16 +20,25 @@
 - Substituído `[...new Set()]` por `Array.from(new Set())`
 - Atualizado target do TypeScript para ES2017
 
+### 4. ❌ `Node.js Version "18.x" is discontinued and must be upgraded`
+
+**Problema:** Vercel descontinuou suporte ao Node.js 18.x
+**✅ Solução:**
+
+- Atualizado para Node.js 22.x
+- Atualizado arquivo `.nvmrc`
+- Atualizada documentação
+
 ## Arquivos Modificados
 
 ### Configurações
 
 - ✅ `next.config.js` - Removida configuração `appDir`
 - ✅ `tsconfig.json` - Target atualizado para ES2017
-- ✅ `package.json` - Versões fixas e Node.js específico
+- ✅ `package.json` - Versões fixas e Node.js 22.x
 - ✅ `.eslintrc.json` - Regra de scripts síncronos desabilitada
 - ✅ `vercel.json` - Configuração específica do Vercel
-- ✅ `.nvmrc` - Versão específica do Node.js
+- ✅ `.nvmrc` - Versão Node.js 22.19.0
 
 ### Código
 
