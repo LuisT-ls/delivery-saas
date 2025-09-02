@@ -296,7 +296,7 @@ export default function CarrinhoPage() {
 
       {/* Modal de Alterar Endereço */}
       {showAddressModal && (
-        <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1}>
+        <div className="modal fade show" style={{ display: 'block', zIndex: 1070 }} tabIndex={-1}>
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
@@ -319,7 +319,7 @@ export default function CarrinhoPage() {
               </div>
             </div>
           </div>
-          <div className="modal-backdrop fade show"></div>
+          <div className="modal-backdrop fade show" style={{ zIndex: 1065 }}></div>
         </div>
       )}
     </div>
