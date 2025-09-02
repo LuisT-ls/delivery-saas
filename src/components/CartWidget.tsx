@@ -12,9 +12,7 @@ export default function CartWidget() {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleCheckout = () => {
-    if (restaurantId) {
-      router.push(`/r/${restaurantId}/checkout`);
-    }
+    router.push('/carrinho');
   };
 
   if (itemCount === 0) {

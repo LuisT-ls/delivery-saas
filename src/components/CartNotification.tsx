@@ -2,11 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/cart-store';
+import { usePathname } from 'next/navigation';
 
 export default function CartNotification() {
   const [showNotification, setShowNotification] = useState(false);
   const [message, setMessage] = useState('');
   const items = useCartStore(state => state.items);
+  const pathname = usePathname();
+
+  // Não mostrar notificação na página de carrinho
+  if (pathname === '/carrinho') {
+    return null;
+  }
 
   useEffect(() => {
     // Detecta quando um item é adicionado ao carrinho
