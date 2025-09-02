@@ -1,5 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,16 +15,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
-// Initialize Firebase services (apenas Firestore)
+// Initialize Firebase services (apenas para server components)
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
-// Auth será inicializado apenas quando necessário
-export const getAuth = async () => {
-  if (typeof window !== 'undefined') {
-    const { getAuth } = await import('firebase/auth');
-    return getAuth(app);
-  }
-  return null;
+// Storage será inicializado apenas quando necessário
+export const getStorage = async () => {
+  const { getStorage } = await import('firebase/storage');
+  return getStorage(app);
 };
 
 export default app;
