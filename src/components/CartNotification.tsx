@@ -19,17 +19,19 @@ export default function CartNotification() {
     // Detecta quando um item é adicionado ao carrinho
     const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-    if (itemCount > 0) {
+    if (itemCount > 0 && items.length > 0) {
       const lastItem = items[items.length - 1];
-      setMessage(`${lastItem.name} adicionado ao carrinho!`);
-      setShowNotification(true);
+      if (lastItem && lastItem.name) {
+        setMessage(`${lastItem.name} adicionado ao carrinho!`);
+        setShowNotification(true);
 
-      // Esconde a notificação após 3 segundos
-      const timer = setTimeout(() => {
-        setShowNotification(false);
-      }, 3000);
+        // Esconde a notificação após 3 segundos
+        const timer = setTimeout(() => {
+          setShowNotification(false);
+        }, 3000);
 
-      return () => clearTimeout(timer);
+        return () => clearTimeout(timer);
+      }
     }
   }, [items]);
 

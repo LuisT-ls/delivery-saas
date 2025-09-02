@@ -1,12 +1,13 @@
 'use client';
 
 import { useCartStore } from '@/lib/cart-store';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 export default function CartWidget() {
-  const { items, total, restaurantId } = useCartStore();
+  const { items, total, removeItem } = useCartStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -15,7 +16,12 @@ export default function CartWidget() {
     router.push('/carrinho');
   };
 
-  if (itemCount === 0) {
+  const handleRemoveItem = (itemId: string) => {
+    removeItem(itemId);
+  };
+
+  // Não mostrar o widget na página de carrinho
+  if (pathname === '/carrinho' || itemCount === 0) {
     return null;
   }
 
@@ -50,7 +56,7 @@ export default function CartWidget() {
                     <span className="me-3">R$ {item.subtotal.toFixed(2)}</span>
                     <button
                       className="btn btn-sm btn-outline-danger"
-                      onClick={() => useCartStore.getState().removeItem(item.itemId)}
+                      onClick={() => handleRemoveItem(item.itemId)}
                     >
                       <i className="fas fa-trash"></i>
                     </button>
