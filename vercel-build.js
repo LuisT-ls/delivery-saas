@@ -38,6 +38,16 @@ try {
     execSync('npm install zustand@^4.4.7 --save', { stdio: 'inherit' })
   }
 
+  // Verificar se o TypeScript está instalado
+  console.log('🔍 Verificando TypeScript...')
+  try {
+    execSync('npm list typescript', { stdio: 'inherit' })
+    console.log('✅ TypeScript encontrado!')
+  } catch (error) {
+    console.log('⚠️  TypeScript não encontrado, instalando...')
+    execSync('npm install typescript@^5.3.3 --save', { stdio: 'inherit' })
+  }
+
   // Verificar configuração TypeScript
   console.log('🔍 Verificando TypeScript...')
   if (fs.existsSync('tsconfig.json')) {

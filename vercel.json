@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
+  "buildCommand": "node vercel-build.js",
+  "installCommand": "npm install --include=dev",
   "framework": "nextjs",
   "build": {
     "env": {
