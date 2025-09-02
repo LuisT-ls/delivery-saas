@@ -38,11 +38,12 @@ export default function CarrinhoPage() {
 
   // Inicialização e verificação de segurança melhorada
   useEffect(() => {
-    // Só executa se o carrinho estiver pronto
+    // Só executa se o carrinho estiver pronto e ainda estiver carregando
     if (isReady && isLoading) {
       const initializeCart = async () => {
         try {
           setError(null)
+          console.log('Inicializando carrinho...')
 
           // Inicializa o carrinho
           const success = initialize()
@@ -51,8 +52,9 @@ export default function CarrinhoPage() {
           }
 
           // Aguarda um pouco para garantir que o estado esteja estável
-          await new Promise(resolve => setTimeout(resolve, 100))
+          await new Promise(resolve => setTimeout(resolve, 200))
 
+          console.log('Carrinho inicializado com sucesso')
           setIsLoading(false)
         } catch (err) {
           console.error('Erro ao inicializar carrinho:', err)
@@ -66,17 +68,28 @@ export default function CarrinhoPage() {
   }, [isReady, isLoading, initialize])
 
   // Verificação de segurança para evitar erros de renderização
-  if (!isReady || isLoading) {
+  if (!isReady) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+            <h2>Inicializando carrinho...</h2>
+            <p className="text-muted">Aguarde enquanto configuramos o carrinho</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (isLoading) {
     return (
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-md-6 text-center">
             <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
             <h2>Carregando carrinho...</h2>
-            <p className="text-muted">
-              {!isReady && 'Inicializando carrinho...'}
-              {isReady && isLoading && 'Carregando itens...'}
-            </p>
+            <p className="text-muted">Carregando seus itens</p>
           </div>
         </div>
       </div>

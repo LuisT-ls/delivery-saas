@@ -19,7 +19,7 @@ export default function CartProvider({ children }: CartProviderProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
-
+  
   // Refs para controlar o estado e evitar loops
   const hasInitialized = useRef(false);
   const hasHydrated = useRef(false);
@@ -51,7 +51,7 @@ export default function CartProvider({ children }: CartProviderProps) {
             console.warn('Store do carrinho não está pronto ainda');
             // Tenta novamente em breve, mas apenas uma vez
             if (!hasInitialized.current) {
-              setTimeout(initializeCart, 100);
+              setTimeout(initializeCart, 200);
             }
             return;
           }
