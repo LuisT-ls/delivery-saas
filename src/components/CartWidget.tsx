@@ -1,23 +1,39 @@
 'use client';
 
-import { useCartStore } from '@/lib/cart-store';
+import { useCart } from '@/lib/use-cart';
 import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 export default function CartWidget() {
-  const { items, total, removeItem } = useCartStore();
+  const { items, total, removeItem, isReady, itemCount } = useCart();
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  // Não mostrar se o carrinho não estiver pronto
+  if (!isReady) {
+    return null;
+  }
 
   const handleCheckout = () => {
-    router.push('/carrinho');
+    try {
+      router.push('/carrinho');
+    } catch (error) {
+      console.error('Erro ao navegar para o carrinho:', error);
+      // Fallback para navegação
+      window.location.href = '/carrinho';
+    }
   };
 
   const handleRemoveItem = (itemId: string) => {
-    removeItem(itemId);
+    try {
+      const success = removeItem(itemId);
+      if (!success) {
+        console.error('Falha ao remover item');
+      }
+    } catch (error) {
+      console.error('Erro ao remover item:', error);
+    }
   };
 
   // Não mostrar o widget na página de carrinho

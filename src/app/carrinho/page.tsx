@@ -2,13 +2,24 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useCartStore } from '@/lib/cart-store'
+import { useCart } from '@/lib/use-cart'
 import { useAuthContext } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 export default function CarrinhoPage() {
-  const { items, updateQuantity, removeItem, clearCart, total, subtotal, tax, initialize } = useCartStore()
+  const {
+    items,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    total,
+    subtotal,
+    tax,
+    initialize,
+    isReady,
+    isEmpty
+  } = useCart()
   const { isAuthenticated } = useAuthContext()
   const router = useRouter()
   const [cupom, setCupom] = useState('')
@@ -25,17 +36,28 @@ export default function CarrinhoPage() {
     complemento: 'Apto 45'
   })
 
-  // Inicialização e verificação de segurança
+  // Inicialização e verificação de segurança melhorada
   useEffect(() => {
     const initializeCart = async () => {
       try {
         setIsLoading(true)
         setError(null)
 
-        // Aguarda um pouco para garantir que o Zustand esteja pronto
+        // Aguarda o carrinho estar pronto
+        if (!isReady) {
+          console.log('Aguardando carrinho estar pronto...')
+          return
+        }
+
+        // Inicializa o carrinho
+        const success = initialize()
+        if (!success) {
+          throw new Error('Falha ao inicializar carrinho')
+        }
+
+        // Aguarda um pouco para garantir que o estado esteja estável
         await new Promise(resolve => setTimeout(resolve, 100))
 
-        initialize()
         setIsLoading(false)
       } catch (err) {
         console.error('Erro ao inicializar carrinho:', err)
@@ -45,16 +67,20 @@ export default function CarrinhoPage() {
     }
 
     initializeCart()
-  }, [initialize])
+  }, [initialize, isReady])
 
   // Verificação de segurança para evitar erros de renderização
-  if (isLoading) {
+  if (!isReady || isLoading) {
     return (
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-md-6 text-center">
             <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
             <h2>Carregando carrinho...</h2>
+            <p className="text-muted">
+              {!isReady && 'Inicializando carrinho...'}
+              {isReady && isLoading && 'Carregando itens...'}
+            </p>
           </div>
         </div>
       </div>

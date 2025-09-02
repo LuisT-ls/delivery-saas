@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useCartStore } from '@/lib/cart-store';
+import { useCart } from '@/lib/use-cart';
 import { usePathname } from 'next/navigation';
 
 export default function CartNotification() {
   const [showNotification, setShowNotification] = useState(false);
   const [message, setMessage] = useState('');
-  const items = useCartStore(state => state.items);
+  const [lastItemCount, setLastItemCount] = useState(0);
+  const { items, isReady, itemCount } = useCart();
   const pathname = usePathname();
 
   // Não mostrar notificação na página de carrinho
@@ -15,13 +16,16 @@ export default function CartNotification() {
     return null;
   }
 
-  useEffect(() => {
-    // Detecta quando um item é adicionado ao carrinho
-    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  // Não mostrar se o carrinho não estiver pronto
+  if (!isReady) {
+    return null;
+  }
 
-    if (itemCount > 0 && items.length > 0) {
+  useEffect(() => {
+    // Só mostra notificação se o número de itens aumentou
+    if (itemCount > lastItemCount && items.length > 0) {
       const lastItem = items[items.length - 1];
-      if (lastItem && lastItem.name) {
+      if (lastItem && lastItem.name && typeof lastItem.name === 'string') {
         setMessage(`${lastItem.name} adicionado ao carrinho!`);
         setShowNotification(true);
 
@@ -33,7 +37,10 @@ export default function CartNotification() {
         return () => clearTimeout(timer);
       }
     }
-  }, [items]);
+
+    // Atualiza o contador de itens
+    setLastItemCount(itemCount);
+  }, [items, itemCount, lastItemCount]);
 
   if (!showNotification) {
     return null;

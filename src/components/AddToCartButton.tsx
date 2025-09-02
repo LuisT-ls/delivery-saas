@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useCartStore } from '@/lib/cart-store';
+import { useCart } from '@/lib/use-cart';
 import { MenuItem } from '@/lib/types';
 
 interface AddToCartButtonProps {
@@ -12,17 +12,81 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({ item, className = '' }: AddToCartButtonProps) {
   const [quantity, setQuantity] = useState(1);
   const [showQuantity, setShowQuantity] = useState(false);
-  const addItem = useCartStore(state => state.addItem);
+  const [isAdding, setIsAdding] = useState(false);
+  const { addItem, isReady } = useCart();
 
-  const handleAddToCart = () => {
-    addItem(item, quantity);
-    setShowQuantity(false);
-    setQuantity(1);
+  const handleAddToCart = async () => {
+    try {
+      setIsAdding(true);
+
+      // Valida se o carrinho está pronto
+      if (!isReady) {
+        console.warn('Carrinho não está pronto ainda');
+        return;
+      }
+
+      // Valida o item antes de adicionar
+      if (!item || !item.id || !item.name || typeof item.price !== 'number' || item.price <= 0) {
+        console.error('Item inválido:', item);
+        alert('Item inválido. Tente novamente.');
+        return;
+      }
+
+      const success = addItem(item, quantity);
+      if (success) {
+        setShowQuantity(false);
+        setQuantity(1);
+      } else {
+        alert('Erro ao adicionar item. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar item ao carrinho:', error);
+      alert('Erro ao adicionar item. Tente novamente.');
+    } finally {
+      setIsAdding(false);
+    }
   };
 
-  const handleQuickAdd = () => {
-    addItem(item, 1);
+  const handleQuickAdd = async () => {
+    try {
+      setIsAdding(true);
+
+      // Valida se o carrinho está pronto
+      if (!isReady) {
+        console.warn('Carrinho não está pronto ainda');
+        return;
+      }
+
+      // Valida o item antes de adicionar
+      if (!item || !item.id || !item.name || typeof item.price !== 'number' || item.price <= 0) {
+        console.error('Item inválido:', item);
+        alert('Item inválido. Tente novamente.');
+        return;
+      }
+
+      const success = addItem(item, 1);
+      if (!success) {
+        alert('Erro ao adicionar item. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar item ao carrinho:', error);
+      alert('Erro ao adicionar item. Tente novamente.');
+    } finally {
+      setIsAdding(false);
+    }
   };
+
+  // Não mostrar se o carrinho não estiver pronto
+  if (!isReady) {
+    return (
+      <div className={className}>
+        <button className="btn btn-secondary" disabled>
+          <i className="fas fa-spinner fa-spin me-2"></i>
+          Carregando...
+        </button>
+      </div>
+    );
+  }
 
   if (showQuantity) {
     return (
@@ -32,6 +96,7 @@ export default function AddToCartButton({ item, className = '' }: AddToCartButto
             className="btn btn-outline-secondary"
             type="button"
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            disabled={isAdding}
           >
             <i className="fas fa-minus"></i>
           </button>
@@ -41,11 +106,13 @@ export default function AddToCartButton({ item, className = '' }: AddToCartButto
             value={quantity}
             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
             min="1"
+            disabled={isAdding}
           />
           <button
             className="btn btn-outline-secondary"
             type="button"
             onClick={() => setQuantity(quantity + 1)}
+            disabled={isAdding}
           >
             <i className="fas fa-plus"></i>
           </button>
@@ -53,12 +120,18 @@ export default function AddToCartButton({ item, className = '' }: AddToCartButto
         <button
           className="btn btn-success"
           onClick={handleAddToCart}
+          disabled={isAdding}
         >
-          <i className="fas fa-check"></i>
+          {isAdding ? (
+            <i className="fas fa-spinner fa-spin"></i>
+          ) : (
+            <i className="fas fa-check"></i>
+          )}
         </button>
         <button
           className="btn btn-outline-secondary"
           onClick={() => setShowQuantity(false)}
+          disabled={isAdding}
         >
           <i className="fas fa-times"></i>
         </button>
@@ -72,9 +145,19 @@ export default function AddToCartButton({ item, className = '' }: AddToCartButto
         className="btn btn-primary"
         onClick={handleQuickAdd}
         onDoubleClick={() => setShowQuantity(true)}
+        disabled={isAdding}
       >
-        <i className="fas fa-plus me-2"></i>
-        Adicionar
+        {isAdding ? (
+          <>
+            <i className="fas fa-spinner fa-spin me-2"></i>
+            Adicionando...
+          </>
+        ) : (
+          <>
+            <i className="fas fa-plus me-2"></i>
+            Adicionar
+          </>
+        )}
       </button>
     </div>
   );

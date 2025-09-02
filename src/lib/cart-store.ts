@@ -13,29 +13,59 @@ export const useCartStore = create<CartState>()(
       tax: 0,
       total: 0,
 
-      // Função de inicialização segura
+      // Função de inicialização segura e robusta
       initialize: () => {
         try {
           const state = get();
-          // Valida se os itens existem e são válidos
-          if (state.items && Array.isArray(state.items) && state.items.length > 0) {
-            // Filtra itens inválidos
+          
+          // Validação rigorosa dos itens
+          if (state.items && Array.isArray(state.items)) {
             const validItems = state.items.filter(item => 
               item && 
+              typeof item === 'object' &&
               item.itemId && 
+              typeof item.itemId === 'string' &&
               item.name && 
+              typeof item.name === 'string' &&
               typeof item.price === 'number' && 
               item.price > 0 &&
               typeof item.quantity === 'number' && 
-              item.quantity > 0
+              item.quantity > 0 &&
+              typeof item.subtotal === 'number' &&
+              item.subtotal > 0 &&
+              item.restaurantId &&
+              typeof item.restaurantId === 'string'
             );
             
+            // Se há itens inválidos, atualiza o estado
             if (validItems.length !== state.items.length) {
-              // Se há itens inválidos, atualiza o estado
+              console.warn(`Removidos ${state.items.length - validItems.length} itens inválidos do carrinho`);
               set({ items: validItems });
             }
             
-            state.calculateTotals();
+            // Recalcula totais apenas se há itens válidos
+            if (validItems.length > 0) {
+              state.calculateTotals();
+            } else {
+              // Se não há itens válidos, limpa o carrinho
+              set({
+                items: [],
+                restaurantId: null,
+                subtotal: 0,
+                tax: 0,
+                total: 0
+              });
+            }
+          } else {
+            // Se items não é um array válido, limpa o carrinho
+            console.warn('Items do carrinho não é um array válido, limpando...');
+            set({
+              items: [],
+              restaurantId: null,
+              subtotal: 0,
+              tax: 0,
+              total: 0
+            });
           }
         } catch (error) {
           console.error('Erro ao inicializar carrinho:', error);
@@ -52,14 +82,34 @@ export const useCartStore = create<CartState>()(
 
       addItem: (item: MenuItem, quantity: number = 1) => {
         try {
-          // Validação dos parâmetros
-          if (!item || !item.id || !item.name || typeof item.price !== 'number' || item.price <= 0) {
+          // Validação rigorosa dos parâmetros
+          if (!item || typeof item !== 'object') {
             console.error('Item inválido:', item);
+            return;
+          }
+          
+          if (!item.id || typeof item.id !== 'string') {
+            console.error('ID do item inválido:', item.id);
+            return;
+          }
+          
+          if (!item.name || typeof item.name !== 'string') {
+            console.error('Nome do item inválido:', item.name);
+            return;
+          }
+          
+          if (typeof item.price !== 'number' || item.price <= 0) {
+            console.error('Preço do item inválido:', item.price);
             return;
           }
           
           if (typeof quantity !== 'number' || quantity <= 0) {
             console.error('Quantidade inválida:', quantity);
+            return;
+          }
+
+          if (!item.restaurantId || typeof item.restaurantId !== 'string') {
+            console.error('ID do restaurante inválido:', item.restaurantId);
             return;
           }
 
@@ -104,6 +154,7 @@ export const useCartStore = create<CartState>()(
             set({ items: [...items, newItem] });
           }
           
+          // Recalcula totais
           get().calculateTotals();
         } catch (error) {
           console.error('Erro ao adicionar item ao carrinho:', error);
@@ -112,7 +163,7 @@ export const useCartStore = create<CartState>()(
 
       removeItem: (itemId: string) => {
         try {
-          if (!itemId) {
+          if (!itemId || typeof itemId !== 'string') {
             console.error('ID do item inválido:', itemId);
             return;
           }
@@ -126,6 +177,7 @@ export const useCartStore = create<CartState>()(
             set({ restaurantId: null });
           }
           
+          // Recalcula totais
           get().calculateTotals();
         } catch (error) {
           console.error('Erro ao remover item do carrinho:', error);
@@ -134,12 +186,12 @@ export const useCartStore = create<CartState>()(
 
       updateQuantity: (itemId: string, quantity: number) => {
         try {
-          if (!itemId) {
+          if (!itemId || typeof itemId !== 'string') {
             console.error('ID do item inválido:', itemId);
             return;
           }
 
-          if (quantity <= 0) {
+          if (typeof quantity !== 'number' || quantity <= 0) {
             get().removeItem(itemId);
             return;
           }
@@ -178,13 +230,20 @@ export const useCartStore = create<CartState>()(
       calculateTotals: () => {
         try {
           const { items } = get();
+          
+          // Validação rigorosa dos itens antes de calcular
           if (!Array.isArray(items)) {
             console.error('Items não é um array:', items);
+            set({ subtotal: 0, tax: 0, total: 0 });
             return;
           }
 
           const subtotal = items.reduce((sum, item) => {
-            if (item && typeof item.subtotal === 'number' && !isNaN(item.subtotal)) {
+            if (item && 
+                typeof item === 'object' &&
+                typeof item.subtotal === 'number' && 
+                !isNaN(item.subtotal) && 
+                item.subtotal > 0) {
               return sum + item.subtotal;
             }
             return sum;
@@ -210,7 +269,10 @@ export const useCartStore = create<CartState>()(
         // Callback executado após reidratação
         if (state) {
           try {
-            state.initialize();
+            // Aguarda um pouco para garantir que o store esteja estável
+            setTimeout(() => {
+              state.initialize();
+            }, 50);
           } catch (error) {
             console.error('Erro na reidratação do carrinho:', error);
           }
