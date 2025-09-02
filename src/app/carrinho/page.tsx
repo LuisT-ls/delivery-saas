@@ -2,72 +2,40 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-// Dados mockados do carrinho
-const mockCarrinho = [
-  {
-    id: 'item1',
-    nome: 'Pizza Margherita',
-    preco: 35.90,
-    quantidade: 2,
-    imagem: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=100&h=100&fit=crop',
-    restaurante: 'Pizza Express',
-    observacoes: 'Sem cebola, borda recheada'
-  },
-  {
-    id: 'item2',
-    nome: 'Refrigerante Coca-Cola',
-    preco: 8.50,
-    quantidade: 1,
-    imagem: 'https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=100&h=100&fit=crop',
-    restaurante: 'Pizza Express',
-    observacoes: 'Lata 350ml'
-  },
-  {
-    id: 'item3',
-    nome: 'Hambúrguer Clássico',
-    preco: 28.90,
-    quantidade: 1,
-    imagem: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=100&h=100&fit=crop',
-    restaurante: 'Burger House',
-    observacoes: 'Sem alface, extra bacon'
-  }
-]
+import { useCartStore } from '@/lib/cart-store'
+import { useAuthContext } from '@/components/AuthProvider'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 export default function CarrinhoPage() {
-  const [itens, setItens] = useState(mockCarrinho)
+  const { items, updateQuantity, removeItem, clearCart, total, subtotal, tax } = useCartStore()
+  const { isAuthenticated } = useAuthContext()
+  const router = useRouter()
   const [cupom, setCupom] = useState('')
   const [cupomAplicado, setCupomAplicado] = useState(false)
-
-  const calcularSubtotal = () => {
-    return itens.reduce((total, item) => total + (item.preco * item.quantidade), 0)
-  }
+  const [showAddressModal, setShowAddressModal] = useState(false)
+  const [endereco, setEndereco] = useState({
+    rua: 'Rua das Flores, 123',
+    bairro: 'Centro',
+    cidade: 'São Paulo',
+    estado: 'SP',
+    cep: '01234-567',
+    complemento: 'Apto 45'
+  })
 
   const calcularTaxaEntrega = () => {
-    // Taxa de entrega baseada no restaurante (simplificado)
-    const restaurantes = [...new Set(itens.map(item => item.restaurante))]
-    return restaurantes.length * 5.00
+    return 5.00 // Taxa fixa de entrega
   }
 
   const calcularDesconto = () => {
     if (cupomAplicado) {
-      return calcularSubtotal() * 0.10 // 10% de desconto
+      return subtotal * 0.10 // 10% de desconto
     }
     return 0
   }
 
   const calcularTotal = () => {
-    return calcularSubtotal() + calcularTaxaEntrega() - calcularDesconto()
-  }
-
-  const atualizarQuantidade = (id: string, novaQuantidade: number) => {
-    if (novaQuantidade <= 0) {
-      setItens(itens.filter(item => item.id !== id))
-    } else {
-      setItens(itens.map(item =>
-        item.id === id ? { ...item, quantidade: novaQuantidade } : item
-      ))
-    }
+    return subtotal + calcularTaxaEntrega() - calcularDesconto()
   }
 
   const aplicarCupom = () => {
@@ -85,8 +53,14 @@ export default function CarrinhoPage() {
   }
 
   const finalizarPedido = () => {
-    if (itens.length === 0) {
+    if (items.length === 0) {
       alert('Adicione itens ao carrinho antes de finalizar o pedido.')
+      return
+    }
+
+    if (!isAuthenticated) {
+      alert('Você precisa estar logado para finalizar o pedido.')
+      router.push('/login')
       return
     }
 
@@ -94,7 +68,12 @@ export default function CarrinhoPage() {
     alert('Funcionalidade de finalização de pedido será implementada em breve!')
   }
 
-  if (itens.length === 0) {
+  const salvarEndereco = (novoEndereco: any) => {
+    setEndereco(novoEndereco)
+    setShowAddressModal(false)
+  }
+
+  if (items.length === 0) {
     return (
       <div className="container py-5">
         <div className="row justify-content-center">
@@ -129,62 +108,57 @@ export default function CarrinhoPage() {
           {/* Lista de Itens */}
           <div className="card border-0 shadow-sm mb-4">
             <div className="card-body">
-              {itens.map(item => (
-                <div key={item.id} className="row align-items-center py-3 border-bottom">
+              {items.map(item => (
+                <div key={item.itemId} className="row align-items-center py-3 border-bottom">
                   <div className="col-md-2">
-                    <img
-                      src={item.imagem}
-                      alt={item.nome}
-                      className="img-fluid rounded"
-                      style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-                    />
+                    <div className="position-relative" style={{ width: '80px', height: '80px' }}>
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="rounded"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
                   </div>
                   <div className="col-md-4">
-                    <h6 className="mb-1">{item.nome}</h6>
-                    <small className="text-muted">{item.restaurante}</small>
-                    {item.observacoes && (
-                      <div className="mt-1">
-                        <small className="text-muted">
-                          <i className="fas fa-info-circle me-1"></i>
-                          {item.observacoes}
-                        </small>
-                      </div>
-                    )}
+                    <h6 className="mb-1">{item.name}</h6>
+                    <small className="text-muted">Restaurante</small>
                   </div>
                   <div className="col-md-2">
                     <div className="input-group input-group-sm">
                       <button
                         className="btn btn-outline-secondary"
-                        onClick={() => atualizarQuantidade(item.id, item.quantidade - 1)}
+                        onClick={() => updateQuantity(item.itemId, item.quantity - 1)}
                       >
                         <i className="fas fa-minus"></i>
                       </button>
                       <input
                         type="number"
                         className="form-control text-center"
-                        value={item.quantidade}
-                        onChange={(e) => atualizarQuantidade(item.id, parseInt(e.target.value) || 0)}
+                        value={item.quantity}
+                        onChange={(e) => updateQuantity(item.itemId, parseInt(e.target.value) || 0)}
                         min="0"
                         style={{ width: '60px' }}
                       />
                       <button
                         className="btn btn-outline-secondary"
-                        onClick={() => atualizarQuantidade(item.id, item.quantidade + 1)}
+                        onClick={() => updateQuantity(item.itemId, item.quantity + 1)}
                       >
                         <i className="fas fa-plus"></i>
                       </button>
                     </div>
                   </div>
                   <div className="col-md-2 text-end">
-                    <strong>R$ {(item.preco * item.quantidade).toFixed(2)}</strong>
+                    <strong>R$ {item.subtotal.toFixed(2)}</strong>
                     <div className="text-muted small">
-                      R$ {item.preco.toFixed(2)} cada
+                      R$ {item.price.toFixed(2)} cada
                     </div>
                   </div>
                   <div className="col-md-2 text-end">
                     <button
                       className="btn btn-outline-danger btn-sm"
-                      onClick={() => atualizarQuantidade(item.id, 0)}
+                      onClick={() => removeItem(item.itemId)}
                     >
                       <i className="fas fa-trash"></i>
                     </button>
@@ -248,7 +222,7 @@ export default function CarrinhoPage() {
             <div className="card-body">
               <div className="d-flex justify-content-between mb-2">
                 <span>Subtotal:</span>
-                <span>R$ {calcularSubtotal().toFixed(2)}</span>
+                <span>R$ {subtotal.toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Taxa de Entrega:</span>
@@ -294,9 +268,24 @@ export default function CarrinhoPage() {
               </div>
               <div className="mb-2">
                 <small className="text-muted">Endereço:</small>
-                <div className="fw-bold">Rua das Flores, 123 - Centro</div>
+                <div className="fw-bold">
+                  {endereco.rua}, {endereco.bairro}
+                  <br />
+                  {endereco.cidade} - {endereco.estado}
+                  <br />
+                  CEP: {endereco.cep}
+                  {endereco.complemento && (
+                    <>
+                      <br />
+                      {endereco.complemento}
+                    </>
+                  )}
+                </div>
               </div>
-              <button className="btn btn-sm btn-outline-secondary w-100">
+              <button
+                className="btn btn-sm btn-outline-secondary w-100"
+                onClick={() => setShowAddressModal(true)}
+              >
                 <i className="fas fa-edit me-1"></i>
                 Alterar Endereço
               </button>
@@ -304,6 +293,139 @@ export default function CarrinhoPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Alterar Endereço */}
+      {showAddressModal && (
+        <div className="modal fade show" style={{ display: 'block' }} tabIndex={-1}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="fas fa-map-marker-alt me-2"></i>
+                  Alterar Endereço de Entrega
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowAddressModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <AddressForm
+                  endereco={endereco}
+                  onSave={salvarEndereco}
+                  onCancel={() => setShowAddressModal(false)}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show"></div>
+        </div>
+      )}
     </div>
+  )
+}
+
+// Componente do formulário de endereço
+function AddressForm({ endereco, onSave, onCancel }: any) {
+  const [formData, setFormData] = useState(endereco)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onSave(formData)
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="row">
+        <div className="col-12 mb-3">
+          <label htmlFor="rua" className="form-label">Rua e Número *</label>
+          <input
+            type="text"
+            className="form-control"
+            id="rua"
+            name="rua"
+            value={formData.rua}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="col-md-6 mb-3">
+          <label htmlFor="bairro" className="form-label">Bairro *</label>
+          <input
+            type="text"
+            className="form-control"
+            id="bairro"
+            name="bairro"
+            value={formData.bairro}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="col-md-6 mb-3">
+          <label htmlFor="cidade" className="form-label">Cidade *</label>
+          <input
+            type="text"
+            className="form-control"
+            id="cidade"
+            name="cidade"
+            value={formData.cidade}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="col-md-6 mb-3">
+          <label htmlFor="estado" className="form-label">Estado *</label>
+          <input
+            type="text"
+            className="form-control"
+            id="estado"
+            name="estado"
+            value={formData.estado}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="col-md-6 mb-3">
+          <label htmlFor="cep" className="form-label">CEP *</label>
+          <input
+            type="text"
+            className="form-control"
+            id="cep"
+            name="cep"
+            value={formData.cep}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="col-12 mb-3">
+          <label htmlFor="complemento" className="form-label">Complemento</label>
+          <input
+            type="text"
+            className="form-control"
+            id="complemento"
+            name="complemento"
+            value={formData.complemento}
+            onChange={handleChange}
+            placeholder="Apartamento, bloco, etc."
+          />
+        </div>
+      </div>
+      <div className="d-flex gap-2 justify-content-end">
+        <button type="button" className="btn btn-secondary" onClick={onCancel}>
+          Cancelar
+        </button>
+        <button type="submit" className="btn btn-primary">
+          Salvar Endereço
+        </button>
+      </div>
+    </form>
   )
 }
