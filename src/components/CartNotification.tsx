@@ -26,13 +26,13 @@ export default function CartNotification() {
     if (itemCount > lastItemCount && items.length > 0) {
       const lastItem = items[items.length - 1];
       if (lastItem && lastItem.name && typeof lastItem.name === 'string') {
-        setMessage(`${lastItem.name} adicionado ao carrinho! Total: R$ ${lastItem.subtotal.toFixed(2)}`);
+        setMessage(`${lastItem.name} adicionado ao carrinho!`);
         setShowNotification(true);
 
-        // Esconde a notificação após 4 segundos
+        // Esconde a notificação após 2 segundos (mais rápido)
         const timer = setTimeout(() => {
           setShowNotification(false);
-        }, 4000);
+        }, 2000);
 
         return () => clearTimeout(timer);
       }
@@ -56,13 +56,10 @@ export default function CartNotification() {
       className="position-fixed top-0 start-50 translate-middle-x mt-3"
       style={{ zIndex: 1060 }}
     >
-      <div className="alert alert-success alert-dismissible fade show shadow-lg" role="alert" style={{ minWidth: '300px' }}>
+      <div className="alert alert-success alert-dismissible fade show shadow" role="alert" style={{ minWidth: '250px' }}>
         <div className="d-flex align-items-center">
-          <i className="fas fa-check-circle fa-2x me-3 text-success"></i>
-          <div className="flex-grow-1">
-            <strong className="d-block">{message}</strong>
-            <small className="text-muted">Carrinho: {itemCount} item(s)</small>
-          </div>
+          <i className="fas fa-check-circle me-2 text-success"></i>
+          <span className="fw-medium">{message}</span>
         </div>
         <button
           type="button"
