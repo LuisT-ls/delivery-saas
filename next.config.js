@@ -23,6 +23,15 @@ const nextConfig = {
       }
     }
 
+    // Excluir módulos problemáticos do bundle do cliente
+    config.externals = config.externals || []
+    if (!isServer) {
+      config.externals.push({
+        undici: 'undici',
+        '@firebase/storage': '@firebase/storage'
+      })
+    }
+
     // Ignorar warnings específicos do Firebase
     config.ignoreWarnings = [
       { module: /node_modules\/@firebase\/storage/ },
@@ -33,7 +42,12 @@ const nextConfig = {
   },
   // Configurações adicionais para melhorar a compatibilidade
   transpilePackages: ['@firebase/storage'],
-  swcMinify: true
+  swcMinify: true,
+  // Forçar versão específica do Node.js
+  experimental: {
+    appDir: true,
+    serverComponentsExternalPackages: ['@firebase/storage']
+  }
 }
 
 module.exports = nextConfig
