@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node test-build.js"
+    "test": "node test-build.js",
+    "seed": "node scripts/seed-data.js"
   },
   "dependencies": {
     "next": "14.0.4",
