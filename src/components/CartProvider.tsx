@@ -19,7 +19,7 @@ export default function CartProvider({ children }: CartProviderProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
-  
+
   // Refs para controlar o estado e evitar loops
   const hasInitialized = useRef(false);
   const hasHydrated = useRef(false);
