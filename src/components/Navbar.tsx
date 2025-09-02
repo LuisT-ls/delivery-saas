@@ -85,6 +85,19 @@ export default function Navbar() {
                     </li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
+                      <Link href="/onboarding" className="dropdown-item">
+                        <i className="fas fa-store me-2"></i>
+                        Meu Restaurante
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/admin" className="dropdown-item">
+                        <i className="fas fa-cog me-2"></i>
+                        Painel Admin
+                      </Link>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
                       <button className="dropdown-item" onClick={handleLogout}>
                         <i className="fas fa-sign-out-alt me-2"></i>
                         Sair

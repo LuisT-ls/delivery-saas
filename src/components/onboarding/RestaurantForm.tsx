@@ -1,0 +1,202 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthContext } from '@/components/AuthProvider';
+import { useRestaurant } from '@/lib/useRestaurant';
+import { RestaurantFormData } from '@/types/restaurant';
+
+export default function RestaurantForm() {
+  const { user } = useAuthContext();
+  const router = useRouter();
+  const { restaurant, loading, error, createRestaurant, updateRestaurant } = useRestaurant(user?.uid);
+
+  const [formData, setFormData] = useState<RestaurantFormData>({
+    name: '',
+    address: '',
+    phone: ''
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Carregar dados do restaurante se existir
+  useEffect(() => {
+    if (restaurant) {
+      setFormData({
+        name: restaurant.name || '',
+        address: restaurant.address || '',
+        phone: restaurant.phone || ''
+      });
+      setIsEditing(true);
+    }
+  }, [restaurant]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!user?.uid) {
+      setMessage({ type: 'error', text: 'Usuário não autenticado' });
+      return;
+    }
+
+    if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) {
+      setMessage({ type: 'error', text: 'Todos os campos são obrigatórios' });
+      return;
+    }
+
+    setMessage(null);
+
+    try {
+      let success = false;
+
+      if (isEditing) {
+        // Atualizar restaurante existente
+        success = await updateRestaurant(formData);
+        if (success) {
+          setMessage({ type: 'success', text: 'Restaurante atualizado com sucesso!' });
+        }
+      } else {
+        // Criar novo restaurante
+        success = await createRestaurant(formData);
+        if (success) {
+          setMessage({ type: 'success', text: 'Restaurante cadastrado com sucesso!' });
+        }
+      }
+
+      if (success) {
+        // Redirecionar para /admin após 2 segundos
+        setTimeout(() => {
+          router.push('/admin');
+        }, 2000);
+      } else {
+        setMessage({
+          type: 'error',
+          text: error || 'Erro ao salvar restaurante. Tente novamente.'
+        });
+      }
+
+    } catch (error) {
+      console.error('Erro ao salvar restaurante:', error);
+      setMessage({
+        type: 'error',
+        text: 'Erro ao salvar restaurante. Tente novamente.'
+      });
+    }
+  };
+
+  return (
+    <div className="container mt-4">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-6">
+          <div className="card shadow">
+            <div className="card-header bg-primary text-white">
+              <h3 className="mb-0">
+                {isEditing ? 'Editar Restaurante' : 'Cadastro do Restaurante'}
+              </h3>
+            </div>
+            <div className="card-body">
+              {message && (
+                <div className={`alert alert-${message.type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`}>
+                  {message.text}
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setMessage(null)}
+                  ></button>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="name" className="form-label">
+                    <i className="fas fa-store me-2"></i>
+                    Nome do Restaurante
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Digite o nome do restaurante"
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="address" className="form-label">
+                    <i className="fas fa-map-marker-alt me-2"></i>
+                    Endereço
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="address"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Digite o endereço completo"
+                    required
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="phone" className="form-label">
+                    <i className="fas fa-phone me-2"></i>
+                    Telefone/WhatsApp
+                  </label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="(11) 99999-9999"
+                    required
+                  />
+                </div>
+
+                <div className="d-grid">
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-lg"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        {isEditing ? 'Atualizando...' : 'Criando...'}
+                      </>
+                    ) : (
+                      isEditing ? 'Atualizar Restaurante' : 'Criar Restaurante'
+                    )}
+                  </button>
+                </div>
+
+                {loading && (
+                  <div className="text-center mt-3">
+                    <small className="text-muted">
+                      <i className="fas fa-spinner fa-spin me-1"></i>
+                      Processando...
+                    </small>
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
