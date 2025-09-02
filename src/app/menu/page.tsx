@@ -51,7 +51,7 @@ export default function MenuPage() {
     }
   ]
 
-  const categories = [...new Set(products.map(product => product.category))]
+  const categories = Array.from(new Set(products.map(product => product.category)))
 
   return (
     <div className="container py-5">

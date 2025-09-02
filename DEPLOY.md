@@ -12,6 +12,10 @@
 
 **Solução:** Criamos um componente `ServiceWorkerRegistration` para registrar o service worker de forma assíncrona.
 
+#### Problema: `Type 'Set<string>' can only be iterated through when using the '--downlevelIteration' flag`
+
+**Solução:** Substituímos `[...new Set()]` por `Array.from(new Set())` e atualizamos o target do TypeScript para ES2017.
+
 ### 2. Configurações Corrigidas
 
 #### next.config.js
@@ -42,6 +46,12 @@ module.exports = nextConfig
 
 - Versões fixas das dependências
 - Adicionado `engines` para especificar versão do Node.js
+- Versão específica do Node.js: 18.19.0
+
+#### tsconfig.json
+
+- Target atualizado para ES2017
+- Suporte melhorado para funcionalidades ES6+
 
 ### 3. Estrutura de Arquivos para Deploy
 
