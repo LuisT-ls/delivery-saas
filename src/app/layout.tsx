@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,25 +22,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('SW registered: ', registration);
-                    })
-                    .catch(function(registrationError) {
-                      console.log('SW registration failed: ', registrationError);
-                    });
-                });
-              }
-            `,
-          }}
-        />
-      </head>
       <body className={inter.className}>
         <div className="d-flex flex-column min-vh-100">
           <Navbar />
@@ -49,6 +31,7 @@ export default function RootLayout({
           <Footer />
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   )

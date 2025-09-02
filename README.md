@@ -38,6 +38,30 @@ npm run dev
 
 4. Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
 
+## 🚀 Deploy no Vercel
+
+### Deploy Automático
+
+1. Conecte seu repositório GitHub ao Vercel
+2. O Vercel detectará automaticamente que é um projeto Next.js
+3. Configure as variáveis de ambiente se necessário
+4. Deploy será feito automaticamente a cada push
+
+### Deploy Manual
+
+```bash
+npm install -g vercel
+vercel login
+vercel --prod
+```
+
+### Configurações do Vercel
+
+- Framework: Next.js
+- Node.js: 18.19.0
+- Build Command: `npm run build`
+- Output Directory: `.next`
+
 ## 📁 Estrutura do Projeto
 
 ```
