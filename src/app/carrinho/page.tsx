@@ -99,10 +99,10 @@ export default function CarrinhoPage() {
         <div className="col-lg-8">
           <div className="d-flex align-items-center mb-4">
             <i className="fas fa-shopping-cart fa-2x text-primary me-3"></i>
-            <div>
-              <h1 className="h3 mb-0">Seu Carrinho</h1>
-              <small className="text-muted">{itens.length} item(s)</small>
-            </div>
+                         <div>
+               <h1 className="h3 mb-0">Seu Carrinho</h1>
+               <small className="text-muted">{items.length} item(s)</small>
+             </div>
           </div>
 
           {/* Lista de Itens */}

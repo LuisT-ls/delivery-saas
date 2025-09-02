@@ -117,13 +117,8 @@ export default function MenuPage() {
     addItem(product, 1)
   }
 
-  // Função para finalizar pedido
-  const handleCheckout = () => {
-    if (!isAuthenticated) {
-      setShowLoginAlert(true)
-      setTimeout(() => setShowLoginAlert(false), 3000)
-      return
-    }
+  // Função para ir para o carrinho
+  const handleGoToCart = () => {
     router.push('/carrinho')
   }
 
@@ -210,20 +205,20 @@ export default function MenuPage() {
         ))}
       </div>
 
-      {/* Carrinho flutuante */}
-      {items.length > 0 && (
-        <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1000 }}>
-          <button
-            className="btn btn-primary btn-lg rounded-circle shadow"
-            onClick={handleCheckout}
-          >
-            <i className="fas fa-shopping-cart"></i>
-            <span className="badge bg-danger position-absolute top-0 start-100 translate-middle">
-              {items.reduce((sum, item) => sum + item.quantity, 0)}
-            </span>
-          </button>
-        </div>
-      )}
+             {/* Carrinho flutuante */}
+       {items.length > 0 && (
+         <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1000 }}>
+           <button
+             className="btn btn-primary btn-lg rounded-circle shadow"
+             onClick={handleGoToCart}
+           >
+             <i className="fas fa-shopping-cart"></i>
+             <span className="badge bg-danger position-absolute top-0 start-100 translate-middle">
+               {items.reduce((sum, item) => sum + item.quantity, 0)}
+             </span>
+           </button>
+         </div>
+       )}
     </div>
   )
 }
