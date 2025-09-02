@@ -195,12 +195,10 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Pedidos: usuários podem criar, ler seus próprios pedidos
+    // Pedidos: qualquer pessoa pode criar, ler e atualizar pedidos
+    // (para permitir acompanhamento sem autenticação)
     match /orders/{orderId} {
-      allow create: if request.auth != null;
-      allow read, update: if request.auth != null &&
-        (resource.data.userId == request.auth.uid ||
-         request.auth.token.admin == true);
+      allow create, read, update: if true;
     }
 
     // Produtos: todos podem ler

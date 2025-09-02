@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getRestaurant, getMenuItem, getCategories } from '@/lib/restaurant-data';
 import { formatPrice } from '@/lib/utils';
+import AddToCartButton from '@/components/AddToCartButton';
 
 interface ItemPageProps {
   params: {
@@ -125,10 +126,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
 
               {item.isAvailable && (
                 <div className="d-grid gap-2">
-                  <button className="btn btn-primary btn-lg">
-                    <i className="fas fa-shopping-cart me-2"></i>
-                    Adicionar ao Carrinho
-                  </button>
+                  <AddToCartButton item={item} className="btn-lg" />
                   <button className="btn btn-outline-primary">
                     <i className="fas fa-heart me-2"></i>
                     Favoritar
