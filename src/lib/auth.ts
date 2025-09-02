@@ -32,7 +32,7 @@ export const signInWithGoogle = async (): Promise<UserCredential> => {
 /**
  * Login anônimo (para clientes)
  */
-export const signInAnonymously = async (): Promise<UserCredential> => {
+export const signInAnonymouslyUser = async (): Promise<UserCredential> => {
   try {
     const result = await signInAnonymously(auth);
     return result;

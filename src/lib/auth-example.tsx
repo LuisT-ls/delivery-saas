@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   signInWithGoogle,
-  signInAnonymously,
+  signInAnonymouslyUser,
   signOutUser,
   getCurrentUser,
   isAnonymousUser,
@@ -39,7 +39,7 @@ export default function AuthExample() {
   const handleAnonymousLogin = async () => {
     setLoading(true);
     try {
-      await signInAnonymously();
+      await signInAnonymouslyUser();
       console.log('Login anônimo realizado com sucesso!');
     } catch (error) {
       console.error('Erro no login anônimo:', error);

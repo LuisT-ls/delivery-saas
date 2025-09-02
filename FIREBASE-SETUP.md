@@ -64,11 +64,11 @@ const handleLogin = async () => {
 ### Login Anônimo (Clientes)
 
 ```typescript
-import { signInAnonymously } from '@/lib/auth'
+import { signInAnonymouslyUser } from '@/lib/auth'
 
 const handleAnonymousLogin = async () => {
   try {
-    const result = await signInAnonymously()
+    const result = await signInAnonymouslyUser()
     console.log('Usuário anônimo logado:', result.user)
   } catch (error) {
     console.error('Erro no login anônimo:', error)
