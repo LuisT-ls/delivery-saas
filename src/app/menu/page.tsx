@@ -12,6 +12,7 @@ export default function MenuPage() {
   const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState('Todos')
   const [showLoginAlert, setShowLoginAlert] = useState(false)
+  const [isAddingToCart, setIsAddingToCart] = useState<string | null>(null)
 
   // Dados de exemplo dos produtos com imagens reais
   const products = [
@@ -113,13 +114,50 @@ export default function MenuPage() {
     : products.filter(product => product.category === selectedCategory)
 
   // Função para adicionar item ao carrinho
-  const handleAddToCart = (product: any) => {
-    addItem(product, 1)
+  const handleAddToCart = async (product: any) => {
+    try {
+      // Validação do produto
+      if (!product || !product.id || !product.name || typeof product.price !== 'number') {
+        console.error('Produto inválido:', product)
+        alert('Erro: Produto inválido. Tente novamente.')
+        return
+      }
+
+      setIsAddingToCart(product.id)
+
+      // Simula um pequeno delay para feedback visual
+      await new Promise(resolve => setTimeout(resolve, 300))
+
+      // Adiciona o item ao carrinho
+      addItem(product, 1)
+
+      // Feedback visual de sucesso
+      const button = document.querySelector(`[data-product-id="${product.id}"]`)
+      if (button) {
+        button.classList.add('btn-success')
+        button.classList.remove('btn-primary')
+        setTimeout(() => {
+          button.classList.remove('btn-success')
+          button.classList.add('btn-primary')
+        }, 1000)
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar item ao carrinho:', error)
+      alert('Erro ao adicionar item ao carrinho. Tente novamente.')
+    } finally {
+      setIsAddingToCart(null)
+    }
   }
 
   // Função para ir para o carrinho
   const handleGoToCart = () => {
-    router.push('/carrinho')
+    try {
+      router.push('/carrinho')
+    } catch (error) {
+      console.error('Erro ao navegar para o carrinho:', error)
+      // Fallback para navegação
+      window.location.href = '/carrinho'
+    }
   }
 
   return (
@@ -167,46 +205,69 @@ export default function MenuPage() {
 
       {/* Lista de produtos */}
       <div className="row">
-        {filteredProducts.map((product) => (
-          <div key={product.id} className="col-lg-4 col-md-6 mb-4">
-            <div className="card h-100 product-card border-0 shadow-sm hover-shadow">
-              <div className="position-relative" style={{ height: '200px' }}>
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="card-img-top"
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
-              <div className="card-body d-flex flex-column">
-                <div className="mb-2">
-                  <span className="badge bg-secondary">{product.category}</span>
+        {filteredProducts.map((product) => {
+          // Validação adicional para cada produto
+          if (!product || !product.id || !product.name || typeof product.price !== 'number') {
+            return null
+          }
+
+          return (
+            <div key={product.id} className="col-lg-4 col-md-6 mb-4">
+              <div className="card h-100 product-card border-0 shadow-sm hover-shadow">
+                <div className="position-relative" style={{ height: '200px' }}>
+                  <Image
+                    src={product.image || '/placeholder-food.svg'}
+                    alt={product.name}
+                    fill
+                    className="card-img-top"
+                    style={{ objectFit: 'cover' }}
+                    onError={(e) => {
+                      // Fallback para imagem quebrada
+                      const target = e.target as HTMLImageElement
+                      target.src = '/placeholder-food.svg'
+                    }}
+                  />
                 </div>
-                <h5 className="card-title">{product.name}</h5>
-                <p className="card-text text-muted flex-grow-1">
-                  {product.description}
-                </p>
-                <div className="d-flex justify-content-between align-items-center mt-auto">
-                  <span className="h5 text-primary mb-0">
-                    R$ {product.price.toFixed(2)}
-                  </span>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <i className="fas fa-plus me-1"></i>
-                    Adicionar
-                  </button>
+                <div className="card-body d-flex flex-column">
+                  <div className="mb-2">
+                    <span className="badge bg-secondary">{product.category}</span>
+                  </div>
+                  <h5 className="card-title">{product.name}</h5>
+                  <p className="card-text text-muted flex-grow-1">
+                    {product.description}
+                  </p>
+                  <div className="d-flex justify-content-between align-items-center mt-auto">
+                    <span className="h5 text-primary mb-0">
+                      R$ {product.price.toFixed(2)}
+                    </span>
+                    <button
+                      className="btn btn-primary"
+                      data-product-id={product.id}
+                      onClick={() => handleAddToCart(product)}
+                      disabled={isAddingToCart === product.id}
+                    >
+                      {isAddingToCart === product.id ? (
+                        <>
+                          <i className="fas fa-spinner fa-spin me-1"></i>
+                          Adicionando...
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-plus me-1"></i>
+                          Adicionar
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Carrinho flutuante */}
-      {items.length > 0 && (
+      {items && Array.isArray(items) && items.length > 0 && (
         <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1000 }}>
           <button
             className="btn btn-primary btn-lg rounded-circle shadow"
@@ -214,7 +275,12 @@ export default function MenuPage() {
           >
             <i className="fas fa-shopping-cart"></i>
             <span className="badge bg-danger position-absolute top-0 start-100 translate-middle">
-              {items.reduce((sum, item) => sum + item.quantity, 0)}
+              {items.reduce((sum, item) => {
+                if (item && typeof item.quantity === 'number' && !isNaN(item.quantity)) {
+                  return sum + item.quantity
+                }
+                return sum
+              }, 0)}
             </span>
           </button>
         </div>

@@ -14,6 +14,8 @@ export default function CarrinhoPage() {
   const [cupom, setCupom] = useState('')
   const [cupomAplicado, setCupomAplicado] = useState(false)
   const [showAddressModal, setShowAddressModal] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [endereco, setEndereco] = useState({
     rua: 'Rua das Flores, 123',
     bairro: 'Centro',
@@ -25,17 +27,84 @@ export default function CarrinhoPage() {
 
   // Inicialização e verificação de segurança
   useEffect(() => {
-    initialize();
-  }, [initialize]);
+    const initializeCart = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+
+        // Aguarda um pouco para garantir que o Zustand esteja pronto
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        initialize()
+        setIsLoading(false)
+      } catch (err) {
+        console.error('Erro ao inicializar carrinho:', err)
+        setError('Erro ao carregar o carrinho. Tente recarregar a página.')
+        setIsLoading(false)
+      }
+    }
+
+    initializeCart()
+  }, [initialize])
 
   // Verificação de segurança para evitar erros de renderização
-  if (!items || !Array.isArray(items)) {
+  if (isLoading) {
     return (
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-md-6 text-center">
             <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
-            <h2>Carregando...</h2>
+            <h2>Carregando carrinho...</h2>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <div className="alert alert-danger" role="alert">
+              <i className="fas fa-exclamation-triangle fa-3x mb-3"></i>
+              <h4>Erro ao carregar carrinho</h4>
+              <p>{error}</p>
+              <button
+                className="btn btn-primary"
+                onClick={() => window.location.reload()}
+              >
+                <i className="fas fa-redo me-2"></i>
+                Recarregar Página
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Validação adicional de segurança
+  if (!items || !Array.isArray(items)) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <div className="alert alert-warning" role="alert">
+              <i className="fas fa-exclamation-triangle fa-3x mb-3"></i>
+              <h4>Carrinho inválido</h4>
+              <p>O carrinho não pôde ser carregado corretamente.</p>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  clearCart()
+                  window.location.reload()
+                }}
+              >
+                <i className="fas fa-redo me-2"></i>
+                Limpar e Recarregar
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -47,14 +116,15 @@ export default function CarrinhoPage() {
   }
 
   const calcularDesconto = () => {
-    if (cupomAplicado) {
+    if (cupomAplicado && typeof subtotal === 'number' && !isNaN(subtotal)) {
       return subtotal * 0.10 // 10% de desconto
     }
     return 0
   }
 
   const calcularTotal = () => {
-    return subtotal + calcularTaxaEntrega() - calcularDesconto()
+    const subtotalValue = typeof subtotal === 'number' && !isNaN(subtotal) ? subtotal : 0
+    return subtotalValue + calcularTaxaEntrega() - calcularDesconto()
   }
 
   const aplicarCupom = () => {
@@ -72,24 +142,34 @@ export default function CarrinhoPage() {
   }
 
   const finalizarPedido = () => {
-    if (items.length === 0) {
-      alert('Adicione itens ao carrinho antes de finalizar o pedido.')
-      return
-    }
+    try {
+      if (!items || items.length === 0) {
+        alert('Adicione itens ao carrinho antes de finalizar o pedido.')
+        return
+      }
 
-    if (!isAuthenticated) {
-      alert('Você precisa estar logado para finalizar o pedido.')
-      router.push('/login')
-      return
-    }
+      if (!isAuthenticated) {
+        alert('Você precisa estar logado para finalizar o pedido.')
+        router.push('/login')
+        return
+      }
 
-    // TODO: Implementar lógica de finalização do pedido
-    alert('Funcionalidade de finalização de pedido será implementada em breve!')
+      // TODO: Implementar lógica de finalização do pedido
+      alert('Funcionalidade de finalização de pedido será implementada em breve!')
+    } catch (err) {
+      console.error('Erro ao finalizar pedido:', err)
+      alert('Erro ao finalizar pedido. Tente novamente.')
+    }
   }
 
   const salvarEndereco = (novoEndereco: any) => {
-    setEndereco(novoEndereco)
-    setShowAddressModal(false)
+    try {
+      setEndereco(novoEndereco)
+      setShowAddressModal(false)
+    } catch (err) {
+      console.error('Erro ao salvar endereço:', err)
+      alert('Erro ao salvar endereço. Tente novamente.')
+    }
   }
 
   if (items.length === 0) {
@@ -127,63 +207,78 @@ export default function CarrinhoPage() {
           {/* Lista de Itens */}
           <div className="card border-0 shadow-sm mb-4">
             <div className="card-body">
-              {items.map(item => (
-                <div key={item.itemId} className="row align-items-center py-3 border-bottom">
-                  <div className="col-md-2">
-                    <div className="position-relative" style={{ width: '80px', height: '80px' }}>
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="rounded"
-                        style={{ objectFit: 'cover' }}
-                      />
+              {items.map(item => {
+                // Validação adicional para cada item
+                if (!item || !item.itemId || !item.name || typeof item.price !== 'number') {
+                  return null
+                }
+
+                return (
+                  <div key={item.itemId} className="row align-items-center py-3 border-bottom">
+                    <div className="col-md-2">
+                      <div className="position-relative" style={{ width: '80px', height: '80px' }}>
+                        <Image
+                          src={item.image || '/placeholder-food.svg'}
+                          alt={item.name}
+                          fill
+                          className="rounded"
+                          style={{ objectFit: 'cover' }}
+                          onError={(e) => {
+                            // Fallback para imagem quebrada
+                            const target = e.target as HTMLImageElement
+                            target.src = '/placeholder-food.svg'
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-4">
-                    <h6 className="mb-1">{item.name}</h6>
-                    <small className="text-muted">Restaurante</small>
-                  </div>
-                  <div className="col-md-2">
-                    <div className="input-group input-group-sm">
+                    <div className="col-md-4">
+                      <h6 className="mb-1">{item.name}</h6>
+                      <small className="text-muted">Restaurante</small>
+                    </div>
+                    <div className="col-md-2">
+                      <div className="input-group input-group-sm">
+                        <button
+                          className="btn btn-outline-secondary"
+                          onClick={() => updateQuantity(item.itemId, item.quantity - 1)}
+                        >
+                          <i className="fas fa-minus"></i>
+                        </button>
+                        <input
+                          type="number"
+                          className="form-control text-center"
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 0
+                            updateQuantity(item.itemId, value)
+                          }}
+                          min="0"
+                          style={{ width: '60px' }}
+                        />
+                        <button
+                          className="btn btn-outline-secondary"
+                          onClick={() => updateQuantity(item.itemId, item.quantity + 1)}
+                        >
+                          <i className="fas fa-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="col-md-2 text-end">
+                      <strong>R$ {item.subtotal?.toFixed(2) || '0.00'}</strong>
+                      <div className="text-muted small">
+                        R$ {item.price?.toFixed(2) || '0.00'} cada
+                      </div>
+                    </div>
+                    <div className="col-md-2 text-end">
                       <button
-                        className="btn btn-outline-secondary"
-                        onClick={() => updateQuantity(item.itemId, item.quantity - 1)}
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => removeItem(item.itemId)}
                       >
-                        <i className="fas fa-minus"></i>
-                      </button>
-                      <input
-                        type="number"
-                        className="form-control text-center"
-                        value={item.quantity}
-                        onChange={(e) => updateQuantity(item.itemId, parseInt(e.target.value) || 0)}
-                        min="0"
-                        style={{ width: '60px' }}
-                      />
-                      <button
-                        className="btn btn-outline-secondary"
-                        onClick={() => updateQuantity(item.itemId, item.quantity + 1)}
-                      >
-                        <i className="fas fa-plus"></i>
+                        <i className="fas fa-trash"></i>
                       </button>
                     </div>
                   </div>
-                  <div className="col-md-2 text-end">
-                    <strong>R$ {item.subtotal.toFixed(2)}</strong>
-                    <div className="text-muted small">
-                      R$ {item.price.toFixed(2)} cada
-                    </div>
-                  </div>
-                  <div className="col-md-2 text-end">
-                    <button
-                      className="btn btn-outline-danger btn-sm"
-                      onClick={() => removeItem(item.itemId)}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -241,7 +336,7 @@ export default function CarrinhoPage() {
             <div className="card-body">
               <div className="d-flex justify-content-between mb-2">
                 <span>Subtotal:</span>
-                <span>R$ {subtotal.toFixed(2)}</span>
+                <span>R$ {typeof subtotal === 'number' && !isNaN(subtotal) ? subtotal.toFixed(2) : '0.00'}</span>
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Taxa de Entrega:</span>

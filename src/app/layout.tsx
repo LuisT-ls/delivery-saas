@@ -10,6 +10,7 @@ import CartWidget from '@/components/CartWidget'
 import CartProvider from '@/components/CartProvider'
 import CartNotification from '@/components/CartNotification'
 import { AuthProvider } from '@/components/AuthProvider'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,21 +28,23 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
-        <AuthProvider>
-          <CartProvider>
-            <div className="d-flex flex-column min-vh-100">
-              <Navbar />
-              <main className="flex-grow-1">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <CartWidget />
-            <CartNotification />
-          </CartProvider>
-          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-          <ServiceWorkerRegistration />
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            <CartProvider>
+              <div className="d-flex flex-column min-vh-100">
+                <Navbar />
+                <main className="flex-grow-1">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+              <CartWidget />
+              <CartNotification />
+            </CartProvider>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            <ServiceWorkerRegistration />
+          </AuthProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )
