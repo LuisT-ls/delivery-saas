@@ -62,6 +62,12 @@ Adicione as seguintes variáveis uma por uma:
 - **Value**: ID da aplicação Firebase
 - **Environment**: Production, Preview, Development
 
+#### 7. NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+
+- **Name**: `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`
+- **Value**: `G-3RY37PR1CP` (seu measurement ID)
+- **Environment**: Production, Preview, Development
+
 ### Passo 4: Onde Encontrar as Credenciais do Firebase
 
 1. Vá para [console.firebase.google.com](https://console.firebase.google.com)
@@ -82,7 +88,8 @@ const firebaseConfig = {
   projectId: 'seu-projeto', // NEXT_PUBLIC_FIREBASE_PROJECT_ID
   storageBucket: 'seu-projeto.appspot.com', // NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
   messagingSenderId: '123456789', // NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
-  appId: '1:123456789:web:abcdef123456' // NEXT_PUBLIC_FIREBASE_APP_ID
+  appId: '1:123456789:web:abcdef123456', // NEXT_PUBLIC_FIREBASE_APP_ID
+  measurementId: 'G-3RY37PR1CP' // NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 }
 ```
 

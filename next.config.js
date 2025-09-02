@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
     serverComponentsExternalPackages: ['@firebase/storage']
   },
   webpack: (config, { isServer }) => {
@@ -41,8 +40,6 @@ const nextConfig = {
 
     return config
   },
-  // Configurações adicionais para melhorar a compatibilidade
-  transpilePackages: ['@firebase/storage'],
   swcMinify: true
 }
 
