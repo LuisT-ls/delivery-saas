@@ -48,7 +48,7 @@ git push
 
 - Vá para Settings > General
 - Clique em "Clear Build Cache"
-- Configure as variáveis de ambiente
+- **IMPORTANTE**: Configure as variáveis de ambiente (veja CONFIGURAR-VARIAVEIS.md)
 
 ### 3. **Variáveis de Ambiente Necessárias**
 
