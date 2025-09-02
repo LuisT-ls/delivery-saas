@@ -29,27 +29,32 @@ NEXT_PUBLIC_FIREBASE_VAPID_KEY=sua_vapid_key_aqui
 ### 3. Configurar Cloud Functions
 
 1. Instale o Firebase CLI globalmente:
+
 ```bash
 npm install -g firebase-tools
 ```
 
 2. Faça login no Firebase:
+
 ```bash
 firebase login
 ```
 
 3. Inicialize o projeto (se ainda não foi feito):
+
 ```bash
 firebase init functions
 ```
 
 4. Instale as dependências das functions:
+
 ```bash
 cd functions
 npm install
 ```
 
 5. Deploy das Cloud Functions:
+
 ```bash
 firebase deploy --only functions
 ```
@@ -102,11 +107,13 @@ Quando um novo pedido é criado:
 ### 1. Teste Local
 
 1. Inicie o emulador do Firebase:
+
 ```bash
 firebase emulators:start
 ```
 
 2. Teste as functions localmente:
+
 ```bash
 firebase functions:shell
 ```

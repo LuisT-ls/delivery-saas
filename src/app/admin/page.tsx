@@ -22,11 +22,11 @@ export default function AdminPage() {
 
   const { orders, loading: ordersLoading, error } = useOrdersRealtime(restaurantId);
   const { newOrderAlert, setNewOrderAlert } = useNewOrderAlert(orders);
-  const { 
-    status: notificationStatus, 
-    isSupported, 
-    setupNotifications, 
-    removeToken 
+  const {
+    status: notificationStatus,
+    isSupported,
+    setupNotifications,
+    removeToken
   } = usePushNotifications();
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function AdminPage() {
     }
 
     const success = await setupNotifications(restaurantId, userId, userEmail);
-    
+
     if (success) {
       // Configurar listener para mensagens em primeiro plano
       pushNotificationService.onMessageReceived((payload) => {
@@ -178,11 +178,11 @@ export default function AdminPage() {
                 onClick={requestNotificationPermission}
                 disabled={notificationStatus === 'requesting' || notificationStatus === 'unsupported'}
                 title={
-                  notificationStatus === 'granted' 
-                    ? 'Notificações push ativas' 
+                  notificationStatus === 'granted'
+                    ? 'Notificações push ativas'
                     : notificationStatus === 'unsupported'
-                    ? 'Notificações push não são suportadas neste navegador'
-                    : 'Ativar notificações push para novos pedidos'
+                      ? 'Notificações push não são suportadas neste navegador'
+                      : 'Ativar notificações push para novos pedidos'
                 }
               >
                 <i className={`fas ${notificationStatus === 'granted' ? 'fa-bell' : 'fa-bell-slash'} me-1`}></i>

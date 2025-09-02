@@ -1,17 +1,17 @@
-const admin = require('firebase-admin');
+const admin = require('firebase-admin')
 
 // Inicializar Firebase Admin
-const serviceAccount = require('../service-account-key.json');
+const serviceAccount = require('../service-account-key.json')
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
-});
+})
 
-const db = admin.firestore();
-const messaging = admin.messaging();
+const db = admin.firestore()
+const messaging = admin.messaging()
 
 async function testPushNotification(restaurantId = 'demo-restaurant-1') {
   try {
-    console.log(`Testando notificações push para restaurante: ${restaurantId}`);
+    console.log(`Testando notificações push para restaurante: ${restaurantId}`)
 
     // Buscar tokens de dispositivos do restaurante
     const devicesSnapshot = await db
@@ -19,34 +19,36 @@ async function testPushNotification(restaurantId = 'demo-restaurant-1') {
       .doc(restaurantId)
       .collection('devices')
       .where('deleted', '!=', true)
-      .get();
+      .get()
 
     if (devicesSnapshot.empty) {
-      console.log('❌ Nenhum dispositivo registrado encontrado');
-      return;
+      console.log('❌ Nenhum dispositivo registrado encontrado')
+      return
     }
 
-    const tokens = [];
+    const tokens = []
     devicesSnapshot.forEach(doc => {
-      const deviceData = doc.data();
+      const deviceData = doc.data()
       if (deviceData.token && !deviceData.deleted) {
-        tokens.push(deviceData.token);
-        console.log(`📱 Dispositivo: ${deviceData.userEmail} (${deviceData.platform})`);
+        tokens.push(deviceData.token)
+        console.log(
+          `📱 Dispositivo: ${deviceData.userEmail} (${deviceData.platform})`
+        )
       }
-    });
+    })
 
     if (tokens.length === 0) {
-      console.log('❌ Nenhum token válido encontrado');
-      return;
+      console.log('❌ Nenhum token válido encontrado')
+      return
     }
 
-    console.log(`📤 Enviando notificação para ${tokens.length} dispositivos...`);
+    console.log(`📤 Enviando notificação para ${tokens.length} dispositivos...`)
 
     // Criar notificação de teste
     const message = {
       notification: {
         title: '🧪 Teste de Notificação',
-        body: 'Esta é uma notificação de teste do sistema de delivery!',
+        body: 'Esta é uma notificação de teste do sistema de delivery!'
       },
       data: {
         type: 'test',
@@ -76,141 +78,158 @@ async function testPushNotification(restaurantId = 'demo-restaurant-1') {
           link: '/admin'
         }
       }
-    };
+    }
 
     // Enviar notificação
-    const response = await messaging.sendToDevice(tokens, message);
+    const response = await messaging.sendToDevice(tokens, message)
 
-    console.log('✅ Notificação enviada com sucesso!');
-    console.log('📊 Resultados:');
-    
-    let successCount = 0;
-    let errorCount = 0;
+    console.log('✅ Notificação enviada com sucesso!')
+    console.log('📊 Resultados:')
+
+    let successCount = 0
+    let errorCount = 0
 
     response.results.forEach((result, index) => {
       if (result.error) {
-        console.log(`❌ Erro no dispositivo ${index + 1}:`, result.error.message);
-        errorCount++;
+        console.log(
+          `❌ Erro no dispositivo ${index + 1}:`,
+          result.error.message
+        )
+        errorCount++
       } else {
-        console.log(`✅ Dispositivo ${index + 1}: Notificação enviada`);
-        successCount++;
+        console.log(`✅ Dispositivo ${index + 1}: Notificação enviada`)
+        successCount++
       }
-    });
+    })
 
-    console.log(`\n📈 Resumo:`);
-    console.log(`   ✅ Sucessos: ${successCount}`);
-    console.log(`   ❌ Erros: ${errorCount}`);
-    console.log(`   📱 Total: ${tokens.length}`);
-
+    console.log(`\n📈 Resumo:`)
+    console.log(`   ✅ Sucessos: ${successCount}`)
+    console.log(`   ❌ Erros: ${errorCount}`)
+    console.log(`   📱 Total: ${tokens.length}`)
   } catch (error) {
-    console.error('❌ Erro ao enviar notificação de teste:', error);
+    console.error('❌ Erro ao enviar notificação de teste:', error)
   }
 }
 
 // Função para listar dispositivos registrados
 async function listDevices(restaurantId = 'demo-restaurant-1') {
   try {
-    console.log(`📋 Dispositivos registrados para restaurante: ${restaurantId}`);
+    console.log(`📋 Dispositivos registrados para restaurante: ${restaurantId}`)
 
     const devicesSnapshot = await db
       .collection('restaurants')
       .doc(restaurantId)
       .collection('devices')
-      .get();
+      .get()
 
     if (devicesSnapshot.empty) {
-      console.log('❌ Nenhum dispositivo encontrado');
-      return;
+      console.log('❌ Nenhum dispositivo encontrado')
+      return
     }
 
-    console.log('\n📱 Lista de dispositivos:');
-    console.log('─'.repeat(80));
+    console.log('\n📱 Lista de dispositivos:')
+    console.log('─'.repeat(80))
 
     devicesSnapshot.forEach((doc, index) => {
-      const deviceData = doc.data();
-      console.log(`${index + 1}. Token: ${doc.id.slice(0, 20)}...`);
-      console.log(`   Email: ${deviceData.userEmail}`);
-      console.log(`   Plataforma: ${deviceData.platform}`);
-      console.log(`   Criado em: ${deviceData.createdAt?.toDate?.() || deviceData.createdAt}`);
-      console.log(`   Último uso: ${deviceData.lastUsed?.toDate?.() || deviceData.lastUsed}`);
-      console.log(`   Status: ${deviceData.deleted ? '❌ Deletado' : '✅ Ativo'}`);
-      console.log('─'.repeat(80));
-    });
-
+      const deviceData = doc.data()
+      console.log(`${index + 1}. Token: ${doc.id.slice(0, 20)}...`)
+      console.log(`   Email: ${deviceData.userEmail}`)
+      console.log(`   Plataforma: ${deviceData.platform}`)
+      console.log(
+        `   Criado em: ${
+          deviceData.createdAt?.toDate?.() || deviceData.createdAt
+        }`
+      )
+      console.log(
+        `   Último uso: ${
+          deviceData.lastUsed?.toDate?.() || deviceData.lastUsed
+        }`
+      )
+      console.log(
+        `   Status: ${deviceData.deleted ? '❌ Deletado' : '✅ Ativo'}`
+      )
+      console.log('─'.repeat(80))
+    })
   } catch (error) {
-    console.error('❌ Erro ao listar dispositivos:', error);
+    console.error('❌ Erro ao listar dispositivos:', error)
   }
 }
 
 // Função para limpar dispositivos antigos
 async function cleanupDevices(restaurantId = 'demo-restaurant-1') {
   try {
-    console.log(`🧹 Limpando dispositivos antigos do restaurante: ${restaurantId}`);
+    console.log(
+      `🧹 Limpando dispositivos antigos do restaurante: ${restaurantId}`
+    )
 
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
     const oldDevicesSnapshot = await db
       .collection('restaurants')
       .doc(restaurantId)
       .collection('devices')
       .where('lastUsed', '<', thirtyDaysAgo)
-      .get();
+      .get()
 
     const deletedDevicesSnapshot = await db
       .collection('restaurants')
       .doc(restaurantId)
       .collection('devices')
       .where('deleted', '==', true)
-      .get();
+      .get()
 
-    const devicesToDelete = [...oldDevicesSnapshot.docs, ...deletedDevicesSnapshot.docs];
+    const devicesToDelete = [
+      ...oldDevicesSnapshot.docs,
+      ...deletedDevicesSnapshot.docs
+    ]
 
     if (devicesToDelete.length === 0) {
-      console.log('✅ Nenhum dispositivo para limpar');
-      return;
+      console.log('✅ Nenhum dispositivo para limpar')
+      return
     }
 
-    const batch = db.batch();
-    
+    const batch = db.batch()
+
     devicesToDelete.forEach(deviceDoc => {
-      batch.delete(deviceDoc.ref);
-    });
+      batch.delete(deviceDoc.ref)
+    })
 
-    await batch.commit();
-    
-    console.log(`✅ ${devicesToDelete.length} dispositivos removidos`);
+    await batch.commit()
 
+    console.log(`✅ ${devicesToDelete.length} dispositivos removidos`)
   } catch (error) {
-    console.error('❌ Erro ao limpar dispositivos:', error);
+    console.error('❌ Erro ao limpar dispositivos:', error)
   }
 }
 
 // Executar comando baseado no argumento
-const command = process.argv[2];
-const restaurantId = process.argv[3] || 'demo-restaurant-1';
+const command = process.argv[2]
+const restaurantId = process.argv[3] || 'demo-restaurant-1'
 
 switch (command) {
   case 'test':
-    testPushNotification(restaurantId);
-    break;
+    testPushNotification(restaurantId)
+    break
   case 'list':
-    listDevices(restaurantId);
-    break;
+    listDevices(restaurantId)
+    break
   case 'cleanup':
-    cleanupDevices(restaurantId);
-    break;
+    cleanupDevices(restaurantId)
+    break
   default:
-    console.log('📖 Uso: node test-push-notifications.js [comando] [restaurantId]');
-    console.log('');
-    console.log('Comandos disponíveis:');
-    console.log('  test     - Enviar notificação de teste');
-    console.log('  list     - Listar dispositivos registrados');
-    console.log('  cleanup  - Limpar dispositivos antigos');
-    console.log('');
-    console.log('Exemplos:');
-    console.log('  node test-push-notifications.js test');
-    console.log('  node test-push-notifications.js test demo-restaurant-1');
-    console.log('  node test-push-notifications.js list');
-    console.log('  node test-push-notifications.js cleanup');
+    console.log(
+      '📖 Uso: node test-push-notifications.js [comando] [restaurantId]'
+    )
+    console.log('')
+    console.log('Comandos disponíveis:')
+    console.log('  test     - Enviar notificação de teste')
+    console.log('  list     - Listar dispositivos registrados')
+    console.log('  cleanup  - Limpar dispositivos antigos')
+    console.log('')
+    console.log('Exemplos:')
+    console.log('  node test-push-notifications.js test')
+    console.log('  node test-push-notifications.js test demo-restaurant-1')
+    console.log('  node test-push-notifications.js list')
+    console.log('  node test-push-notifications.js cleanup')
 }
