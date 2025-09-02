@@ -11,17 +11,17 @@ export default function CartNotification() {
   const { items, isReady, itemCount } = useCart();
   const pathname = usePathname();
 
-  // Não mostrar notificação na página de carrinho
-  if (pathname === '/carrinho') {
-    return null;
-  }
-
-  // Não mostrar se o carrinho não estiver pronto
-  if (!isReady) {
-    return null;
-  }
-
   useEffect(() => {
+    // Não mostrar se o carrinho não estiver pronto
+    if (!isReady) {
+      return;
+    }
+
+    // Não mostrar notificação na página de carrinho
+    if (pathname === '/carrinho') {
+      return;
+    }
+
     // Só mostra notificação se o número de itens aumentou
     if (itemCount > lastItemCount && items.length > 0) {
       const lastItem = items[items.length - 1];
@@ -40,7 +40,12 @@ export default function CartNotification() {
 
     // Atualiza o contador de itens
     setLastItemCount(itemCount);
-  }, [items, itemCount, lastItemCount]);
+  }, [items, itemCount, lastItemCount, isReady, pathname]);
+
+  // Não mostrar se o carrinho não estiver pronto ou se estiver na página de carrinho
+  if (!isReady || pathname === '/carrinho') {
+    return null;
+  }
 
   if (!showNotification) {
     return null;

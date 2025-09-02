@@ -38,7 +38,7 @@ export default function CarrinhoPage() {
 
   // Inicialização e verificação de segurança melhorada
   useEffect(() => {
-    // Só executa se o carrinho estiver pronto e não estiver carregando
+    // Só executa se o carrinho estiver pronto
     if (isReady && isLoading) {
       const initializeCart = async () => {
         try {
@@ -66,7 +66,7 @@ export default function CarrinhoPage() {
   }, [isReady, isLoading, initialize])
 
   // Verificação de segurança para evitar erros de renderização
-  if (isLoading) {
+  if (!isReady || isLoading) {
     return (
       <div className="container py-5">
         <div className="row justify-content-center">
@@ -133,6 +133,27 @@ export default function CarrinhoPage() {
     )
   }
 
+  // Mostra carrinho vazio se não há itens
+  if (isEmpty || items.length === 0) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <i className="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+            <h2>Carrinho Vazio</h2>
+            <p className="text-muted mb-4">
+              Seu carrinho está vazio. Adicione alguns itens deliciosos!
+            </p>
+            <Link href="/restaurantes" className="btn btn-primary btn-lg">
+              <i className="fas fa-store me-2"></i>
+              Ver Restaurantes
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const calcularTaxaEntrega = () => {
     return 5.00 // Taxa fixa de entrega
   }
@@ -192,26 +213,6 @@ export default function CarrinhoPage() {
       console.error('Erro ao salvar endereço:', err)
       alert('Erro ao salvar endereço. Tente novamente.')
     }
-  }
-
-  if (items.length === 0) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <i className="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-            <h2>Carrinho Vazio</h2>
-            <p className="text-muted mb-4">
-              Seu carrinho está vazio. Adicione alguns itens deliciosos!
-            </p>
-            <Link href="/restaurantes" className="btn btn-primary btn-lg">
-              <i className="fas fa-store me-2"></i>
-              Ver Restaurantes
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
