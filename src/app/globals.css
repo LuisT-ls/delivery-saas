@@ -42,3 +42,139 @@ body {
   transform: translateY(-5px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+/* Admin Dashboard Styles */
+.admin-dashboard {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.admin-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-main {
+  padding: 2rem 0;
+}
+
+.order-board {
+  margin-top: 1rem;
+}
+
+.order-column {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.order-card {
+  transition: all 0.3s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.order-card .card {
+  border-radius: 8px;
+  border: none;
+}
+
+.order-card .card-header {
+  border-radius: 8px 8px 0 0 !important;
+  border-bottom: none;
+}
+
+.order-items {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+/* Login Screen Styles */
+.login-screen {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+.login-screen .card {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading Screen Styles */
+.loading-screen {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: white;
+}
+
+/* Alert Animation */
+.alert {
+  animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .order-board .col-md-2 {
+    margin-bottom: 1rem;
+  }
+
+  .order-column {
+    max-height: 50vh;
+  }
+
+  .admin-header .d-flex {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .admin-header .badge {
+    font-size: 0.75rem;
+  }
+}
+
+/* Status indicator */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.status-online {
+  background-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
+}
+
+/* Urgent order animation */
+@keyframes urgentPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+.order-card .card.border-danger {
+  animation: urgentPulse 2s infinite;
+}

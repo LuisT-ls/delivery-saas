@@ -89,10 +89,10 @@ export interface Order {
   restaurantId: string;
   items: OrderItem[];
   customer: CustomerInfo;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
+  status: 'pending' | 'preparing' | 'ready' | 'delivering' | 'delivered';
   subtotal: number;
   tax: number;
   total: number;
-  createdAt: any; // Firestore Timestamp
-  updatedAt: any; // Firestore Timestamp
+  createdAt: Date;
+  updatedAt: Date;
 }
