@@ -46,7 +46,6 @@ export default function CartProvider({ children }: CartProviderProps) {
             store.initialize();
             setIsInitialized(true);
             hasInitialized.current = true;
-            console.log('Carrinho inicializado com sucesso');
           } else {
             console.warn('Store do carrinho não está pronto ainda');
             // Tenta novamente em breve, mas apenas uma vez
@@ -66,7 +65,6 @@ export default function CartProvider({ children }: CartProviderProps) {
       if (useCartStore.persist && typeof useCartStore.persist.onFinishHydration === 'function') {
         unsubscribeRef.current = useCartStore.persist.onFinishHydration(() => {
           if (!hasHydrated.current) {
-            console.log('Hidratação do Zustand concluída');
             setIsHydrated(true);
             hasHydrated.current = true;
             // Inicializa o carrinho após a hidratação
@@ -75,7 +73,6 @@ export default function CartProvider({ children }: CartProviderProps) {
         });
       } else {
         // Se não há persist, marca como hidratado e inicializa
-        console.log('Zustand sem persist, inicializando diretamente');
         setIsHydrated(true);
         hasHydrated.current = true;
         initializeCart();
@@ -84,7 +81,6 @@ export default function CartProvider({ children }: CartProviderProps) {
       // Fallback: se a hidratação demorar muito, tenta inicializar
       const timeoutId = setTimeout(() => {
         if (!hasHydrated.current && !hasInitialized.current) {
-          console.log('Fallback: inicializando sem hidratação');
           setIsHydrated(true);
           hasHydrated.current = true;
           initializeCart();

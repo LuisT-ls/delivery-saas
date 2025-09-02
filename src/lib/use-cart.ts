@@ -10,10 +10,8 @@ export function useCart() {
   useEffect(() => {
     // Define isReady como true quando ambos os estados estiverem prontos
     if (isHydrated && isInitialized) {
-      console.log('useCart: Carrinho pronto!', { isHydrated, isInitialized });
       setIsReady(true);
     } else {
-      console.log('useCart: Aguardando...', { isHydrated, isInitialized });
       setIsReady(false);
     }
   }, [isHydrated, isInitialized]);
