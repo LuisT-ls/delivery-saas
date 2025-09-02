@@ -3,16 +3,35 @@ const STATIC_CACHE = 'delivery-saas-static-v1'
 const DYNAMIC_CACHE = 'delivery-saas-dynamic-v1'
 
 // URLs para precache
-const PRECACHE_URLS = [
-  '/',
-  '/menu',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
-]
+const PRECACHE_URLS = ['/', '/menu', '/manifest.json']
 
 // Estratégia de cache para imagens
 const IMAGE_CACHE_STRATEGY = 'cache-first'
+
+// Função para verificar se a URL é válida para cache
+function isValidUrlForCache(url) {
+  // Não fazer cache de URLs com esquemas não suportados
+  if (
+    url.protocol === 'chrome-extension:' ||
+    url.protocol === 'chrome:' ||
+    url.protocol === 'moz-extension:' ||
+    url.protocol === 'edge:' ||
+    url.protocol === 'safari-extension:'
+  ) {
+    return false
+  }
+
+  // Não fazer cache de URLs de extensões
+  if (
+    url.hostname.includes('chrome-extension') ||
+    url.hostname.includes('moz-extension') ||
+    url.hostname.includes('safari-extension')
+  ) {
+    return false
+  }
+
+  return true
+}
 
 // Instalação do Service Worker
 self.addEventListener('install', event => {
@@ -64,11 +83,18 @@ self.addEventListener('fetch', event => {
   const { request } = event
   const url = new URL(request.url)
 
+  // Verificar se a URL é válida para cache
+  if (!isValidUrlForCache(url)) {
+    // Para URLs não suportadas, apenas fazer fetch sem cache
+    event.respondWith(fetch(request))
+    return
+  }
+
   // Estratégia para páginas principais (Network First com fallback para cache)
   if (
     request.mode === 'navigate' ||
     (request.method === 'GET' &&
-      request.headers.get('accept').includes('text/html'))
+      request.headers.get('accept')?.includes('text/html'))
   ) {
     event.respondWith(
       fetch(request)
@@ -76,10 +102,14 @@ self.addEventListener('fetch', event => {
           // Clone a resposta antes de usar
           const responseClone = response.clone()
 
-          // Armazena no cache dinâmico
-          caches.open(DYNAMIC_CACHE).then(cache => {
-            cache.put(request, responseClone)
-          })
+          // Armazena no cache dinâmico apenas se for uma resposta válida
+          if (response.status === 200) {
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(request, responseClone).catch(error => {
+                console.warn('Erro ao armazenar no cache:', error)
+              })
+            })
+          }
 
           return response
         })
@@ -160,14 +190,16 @@ self.addEventListener('fetch', event => {
             const responseToCache = response.clone()
 
             caches.open(DYNAMIC_CACHE).then(cache => {
-              cache.put(request, responseToCache)
+              cache.put(request, responseToCache).catch(error => {
+                console.warn('Erro ao armazenar imagem no cache:', error)
+              })
             })
 
             return response
           })
           .catch(() => {
             // Fallback para imagem placeholder
-            return caches.match('/icons/icon-192x192.png')
+            return caches.match('/icons/icon.svg')
           })
       })
     )
@@ -193,7 +225,9 @@ self.addEventListener('fetch', event => {
           const responseToCache = response.clone()
 
           caches.open(DYNAMIC_CACHE).then(cache => {
-            cache.put(request, responseToCache)
+            cache.put(request, responseToCache).catch(error => {
+              console.warn('Erro ao armazenar recurso no cache:', error)
+            })
           })
 
           return response
@@ -237,8 +271,8 @@ self.addEventListener('push', event => {
 
   const options = {
     body: event.data ? event.data.text() : 'Nova notificação do Delivery SaaS',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: '/icons/icon.svg',
+    badge: '/icons/icon.svg',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -248,12 +282,12 @@ self.addEventListener('push', event => {
       {
         action: 'explore',
         title: 'Ver Pedido',
-        icon: '/icons/icon-72x72.png'
+        icon: '/icons/icon.svg'
       },
       {
         action: 'close',
         title: 'Fechar',
-        icon: '/icons/icon-72x72.png'
+        icon: '/icons/icon.svg'
       }
     ]
   }
