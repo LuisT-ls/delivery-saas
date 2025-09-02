@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState, useRef } from 'react';
 import { useCartStore } from '@/lib/cart-store';
 
 interface CartContextType {
@@ -19,11 +19,26 @@ export default function CartProvider({ children }: CartProviderProps) {
   const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  
+  // Refs para controlar o estado e evitar loops
+  const hasInitialized = useRef(false);
+  const hasHydrated = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
+    // Evita execução múltipla
+    if (hasInitialized.current) {
+      return;
+    }
+
     try {
       // Função para inicializar o carrinho de forma segura
       const initializeCart = () => {
+        if (hasInitialized.current) {
+          return;
+        }
+
         try {
           const store = useCartStore.getState();
 
@@ -31,43 +46,67 @@ export default function CartProvider({ children }: CartProviderProps) {
           if (store && typeof store.initialize === 'function') {
             store.initialize();
             setIsInitialized(true);
+            hasInitialized.current = true;
+            console.log('Carrinho inicializado com sucesso');
           } else {
             console.warn('Store do carrinho não está pronto ainda');
-            // Tenta novamente em breve
-            setTimeout(initializeCart, 50);
+            // Tenta novamente em breve, mas apenas uma vez
+            if (!hasInitialized.current) {
+              setTimeout(initializeCart, 100);
+            }
             return;
           }
         } catch (err) {
           console.error('Erro ao inicializar carrinho:', err);
           setError('Erro ao inicializar carrinho');
+          hasInitialized.current = true; // Evita tentativas infinitas
         }
       };
 
       // Aguarda a hidratação do Zustand
-      const unsubscribe = useCartStore.persist.onFinishHydration(() => {
+      if (useCartStore.persist && typeof useCartStore.persist.onFinishHydration === 'function') {
+        unsubscribeRef.current = useCartStore.persist.onFinishHydration(() => {
+          if (!hasHydrated.current) {
+            console.log('Hidratação do Zustand concluída');
+            setIsHydrated(true);
+            hasHydrated.current = true;
+            // Inicializa o carrinho após a hidratação
+            initializeCart();
+          }
+        });
+      } else {
+        // Se não há persist, marca como hidratado e inicializa
+        console.log('Zustand sem persist, inicializando diretamente');
         setIsHydrated(true);
-        // Inicializa o carrinho após a hidratação
+        hasHydrated.current = true;
         initializeCart();
-      });
+      }
 
       // Fallback: se a hidratação demorar muito, tenta inicializar
-      const timeoutId = setTimeout(() => {
-        if (!isHydrated) {
+      timeoutRef.current = setTimeout(() => {
+        if (!hasHydrated.current && !hasInitialized.current) {
           console.warn('Hidratação demorou muito, tentando inicializar...');
           setIsHydrated(true);
+          hasHydrated.current = true;
           initializeCart();
         }
-      }, 1000);
+      }, 2000); // Aumentado para 2 segundos
 
       return () => {
-        unsubscribe();
-        clearTimeout(timeoutId);
+        // Cleanup
+        if (unsubscribeRef.current) {
+          unsubscribeRef.current();
+        }
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
       };
     } catch (err) {
       console.error('Erro no CartProvider:', err);
       setError('Erro interno do carrinho');
+      hasInitialized.current = true; // Evita tentativas infinitas
     }
-  }, []);
+  }, []); // Dependências vazias para executar apenas uma vez
 
   const contextValue: CartContextType = {
     isInitialized,

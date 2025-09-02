@@ -270,9 +270,8 @@ export const useCartStore = create<CartState>()(
         if (state) {
           try {
             // Aguarda um pouco para garantir que o store esteja estável
-            setTimeout(() => {
-              state.initialize();
-            }, 50);
+            // Mas não executa initialize automaticamente para evitar loops
+            console.log('Reidratação do carrinho concluída');
           } catch (error) {
             console.error('Erro na reidratação do carrinho:', error);
           }
