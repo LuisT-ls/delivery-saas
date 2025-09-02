@@ -60,6 +60,7 @@ export interface CartState {
   subtotal: number;
   tax: number;
   total: number;
+  initialize: () => void;
   addItem: (item: MenuItem, quantity?: number) => void;
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;

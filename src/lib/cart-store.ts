@@ -13,6 +13,14 @@ export const useCartStore = create<CartState>()(
       tax: 0,
       total: 0,
 
+      // Função de inicialização segura
+      initialize: () => {
+        const state = get();
+        if (state.items && state.items.length > 0) {
+          state.calculateTotals();
+        }
+      },
+
       addItem: (item: MenuItem, quantity: number = 1) => {
         const { items, restaurantId } = get();
         

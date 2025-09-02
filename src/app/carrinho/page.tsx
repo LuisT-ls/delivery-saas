@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
 export default function CarrinhoPage() {
-  const { items, updateQuantity, removeItem, clearCart, total, subtotal, tax } = useCartStore()
+  const { items, updateQuantity, removeItem, clearCart, total, subtotal, tax, initialize } = useCartStore()
   const { isAuthenticated } = useAuthContext()
   const router = useRouter()
   const [cupom, setCupom] = useState('')
@@ -22,6 +22,25 @@ export default function CarrinhoPage() {
     cep: '01234-567',
     complemento: 'Apto 45'
   })
+
+  // Inicialização e verificação de segurança
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  // Verificação de segurança para evitar erros de renderização
+  if (!items || !Array.isArray(items)) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+            <h2>Carregando...</h2>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const calcularTaxaEntrega = () => {
     return 5.00 // Taxa fixa de entrega
