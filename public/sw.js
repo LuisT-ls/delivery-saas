@@ -269,18 +269,42 @@ function doBackgroundSync() {
 self.addEventListener('push', event => {
   console.log('Push notification recebida:', event)
 
-  const options = {
-    body: event.data ? event.data.text() : 'Nova notificação do Delivery SaaS',
+  let notificationData = {
+    title: 'Novo Pedido',
+    body: 'Você recebeu um novo pedido!',
     icon: '/icons/icon.svg',
     badge: '/icons/icon.svg',
-    vibrate: [100, 50, 100],
     data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
+      url: '/admin',
+      dateOfArrival: Date.now()
+    }
+  }
+
+  // Se há dados na mensagem, usar eles
+  if (event.data) {
+    try {
+      const data = event.data.json()
+      notificationData = {
+        ...notificationData,
+        title: data.title || notificationData.title,
+        body: data.body || notificationData.body,
+        data: {
+          ...notificationData.data,
+          ...data.data
+        }
+      }
+    } catch (error) {
+      console.log('Usando dados padrão da notificação')
+    }
+  }
+
+  const options = {
+    ...notificationData,
+    vibrate: [100, 50, 100],
+    requireInteraction: true,
     actions: [
       {
-        action: 'explore',
+        action: 'view',
         title: 'Ver Pedido',
         icon: '/icons/icon.svg'
       },
@@ -292,7 +316,9 @@ self.addEventListener('push', event => {
     ]
   }
 
-  event.waitUntil(self.registration.showNotification('Delivery SaaS', options))
+  event.waitUntil(
+    self.registration.showNotification(notificationData.title, options)
+  )
 })
 
 // Clique em notificação
@@ -301,7 +327,20 @@ self.addEventListener('notificationclick', event => {
 
   event.notification.close()
 
-  if (event.action === 'explore') {
-    event.waitUntil(clients.openWindow('/menu'))
+  if (event.action === 'view' || event.action === 'explore') {
+    event.waitUntil(
+      clients.matchAll({ type: 'window' }).then(clientList => {
+        // Verificar se já existe uma janela aberta
+        for (const client of clientList) {
+          if (client.url.includes('/admin') && 'focus' in client) {
+            return client.focus()
+          }
+        }
+        // Se não existe, abrir nova janela
+        if (clients.openWindow) {
+          return clients.openWindow('/admin')
+        }
+      })
+    )
   }
 })

@@ -11,6 +11,8 @@ import LoadingScreen from '@/components/admin/LoadingScreen';
 import NotificationSound from '@/components/admin/NotificationSound';
 import StatsCard from '@/components/admin/StatsCard';
 import { useOrdersRealtime, useNewOrderAlert } from '@/lib/admin-hooks';
+import { usePushNotifications } from '@/lib/use-push-notifications';
+import { pushNotificationService } from '@/lib/push-notifications';
 
 export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -20,6 +22,12 @@ export default function AdminPage() {
 
   const { orders, loading: ordersLoading, error } = useOrdersRealtime(restaurantId);
   const { newOrderAlert, setNewOrderAlert } = useNewOrderAlert(orders);
+  const { 
+    status: notificationStatus, 
+    isSupported, 
+    setupNotifications, 
+    removeToken 
+  } = usePushNotifications();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
@@ -29,21 +37,40 @@ export default function AdminPage() {
       if (user && isGoogleUser()) {
         // Para demo, vamos usar um restaurantId fixo
         // Em produção, isso viria do perfil do usuário ou configuração
-        setRestaurantId('demo-restaurant-1');
+        const demoRestaurantId = 'demo-restaurant-1';
+        setRestaurantId(demoRestaurantId);
 
-        // Solicitar permissão de notificação
-        if ('Notification' in window && Notification.permission === 'default') {
-          setTimeout(() => {
-            Notification.requestPermission();
-          }, 1000);
-        }
+        // Configurar notificações push
+        setupPushNotifications(demoRestaurantId, user.uid, user.email || '');
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [setupNotifications]);
 
+  const setupPushNotifications = async (restaurantId: string, userId: string, userEmail: string) => {
+    if (!isSupported) {
+      console.log('Notificações push não são suportadas neste navegador');
+      return;
+    }
 
+    const success = await setupNotifications(restaurantId, userId, userEmail);
+    
+    if (success) {
+      // Configurar listener para mensagens em primeiro plano
+      pushNotificationService.onMessageReceived((payload) => {
+        console.log('Notificação recebida em primeiro plano:', payload);
+        // Mostrar notificação local ou atualizar UI
+        if (payload.notification) {
+          new Notification(payload.notification.title || 'Novo Pedido', {
+            body: payload.notification.body || 'Você recebeu um novo pedido!',
+            icon: '/icons/icon.svg',
+            badge: '/icons/icon.svg',
+          });
+        }
+      });
+    }
+  };
 
   const handleLogin = async () => {
     try {
@@ -55,6 +82,9 @@ export default function AdminPage() {
 
   const handleLogout = async () => {
     try {
+      if (restaurantId) {
+        await removeToken(restaurantId);
+      }
       await signOutUser();
       setRestaurantId(null);
     } catch (error) {
@@ -63,11 +93,42 @@ export default function AdminPage() {
   };
 
   const requestNotificationPermission = async () => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        alert('Notificações ativadas! Você receberá alertas de novos pedidos.');
-      }
+    if (!restaurantId || !user) return;
+
+    await setupNotifications(restaurantId, user.uid, user.email || '');
+  };
+
+  const getNotificationButtonText = () => {
+    switch (notificationStatus) {
+      case 'granted':
+        return 'Notificações Ativas';
+      case 'denied':
+        return 'Ativar Notificações';
+      case 'requesting':
+        return 'Configurando...';
+      case 'error':
+        return 'Erro - Tentar Novamente';
+      case 'unsupported':
+        return 'Não Suportado';
+      default:
+        return 'Ativar Notificações';
+    }
+  };
+
+  const getNotificationButtonClass = () => {
+    switch (notificationStatus) {
+      case 'granted':
+        return 'btn-success';
+      case 'denied':
+        return 'btn-warning';
+      case 'requesting':
+        return 'btn-secondary';
+      case 'error':
+        return 'btn-danger';
+      case 'unsupported':
+        return 'btn-secondary';
+      default:
+        return 'btn-outline-info';
     }
   };
 
@@ -113,12 +174,19 @@ export default function AdminPage() {
                 {user.email}
               </span>
               <button
-                className="btn btn-outline-info me-2"
+                className={`btn ${getNotificationButtonClass()} me-2`}
                 onClick={requestNotificationPermission}
-                title="Ativar notificações"
+                disabled={notificationStatus === 'requesting' || notificationStatus === 'unsupported'}
+                title={
+                  notificationStatus === 'granted' 
+                    ? 'Notificações push ativas' 
+                    : notificationStatus === 'unsupported'
+                    ? 'Notificações push não são suportadas neste navegador'
+                    : 'Ativar notificações push para novos pedidos'
+                }
               >
-                <i className="fas fa-bell me-1"></i>
-                Notificações
+                <i className={`fas ${notificationStatus === 'granted' ? 'fa-bell' : 'fa-bell-slash'} me-1`}></i>
+                {getNotificationButtonText()}
               </button>
               <button
                 className="btn btn-outline-danger"
