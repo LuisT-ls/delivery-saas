@@ -25,7 +25,7 @@ export default function CartTestButton() {
         createdAt: new Date(),
         updatedAt: new Date()
       };
-      
+
       const success = addItem(testItem, 1);
       console.log('Teste de adicionar item:', { success, testItem });
     }
