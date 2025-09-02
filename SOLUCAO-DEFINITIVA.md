@@ -8,7 +8,7 @@ O erro persiste porque o Vercel ainda está usando a versão antiga do Next.js (
 
 ### 1. **Versão do Node.js**
 
-- Mudança de Node.js 22.x para 18.x (mais estável)
+- Atualizado para Node.js 22.x (exigido pelo Vercel)
 - Arquivo `.nvmrc` criado para forçar versão específica
 
 ### 2. **Firebase Otimizado**
@@ -64,7 +64,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef123456
 ### 4. **Configurações do Build**
 
 - **Framework**: Next.js
-- **Build Command**: `chmod +x vercel-build.sh && ./vercel-build.sh`
+- **Build Command**: `npm run build`
 - **Install Command**: `npm install`
 - **Output Directory**: `.next`
 

@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true
+    appDir: true,
+    serverComponentsExternalPackages: ['@firebase/storage']
   },
   webpack: (config, { isServer }) => {
     // Resolver problemas de compatibilidade com Firebase
@@ -42,12 +43,7 @@ const nextConfig = {
   },
   // Configurações adicionais para melhorar a compatibilidade
   transpilePackages: ['@firebase/storage'],
-  swcMinify: true,
-  // Forçar versão específica do Node.js
-  experimental: {
-    appDir: true,
-    serverComponentsExternalPackages: ['@firebase/storage']
-  }
+  swcMinify: true
 }
 
 module.exports = nextConfig
