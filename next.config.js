@@ -1,8 +1,39 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    domains: ['localhost']
-  }
+  experimental: {
+    appDir: true
+  },
+  webpack: (config, { isServer }) => {
+    // Resolver problemas de compatibilidade com Firebase
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        stream: false,
+        url: false,
+        zlib: false,
+        http: false,
+        https: false,
+        assert: false,
+        os: false,
+        path: false
+      }
+    }
+
+    // Ignorar warnings específicos do Firebase
+    config.ignoreWarnings = [
+      { module: /node_modules\/@firebase\/storage/ },
+      { module: /node_modules\/undici/ }
+    ]
+
+    return config
+  },
+  // Configurações adicionais para melhorar a compatibilidade
+  transpilePackages: ['@firebase/storage'],
+  swcMinify: true
 }
 
 module.exports = nextConfig
