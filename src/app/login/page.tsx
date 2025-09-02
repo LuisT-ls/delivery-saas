@@ -2,33 +2,34 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useAuthContext } from '@/components/AuthProvider'
+import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [loading, setLoading] = useState(false)
+  const { loginWithGoogle, loginAnonymously, loading } = useAuthContext()
+  const router = useRouter()
+  const [error, setError] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-
-    // TODO: Implementar lógica de autenticação
-    console.log('Tentativa de login:', formData)
-
-    // Simular delay
-    setTimeout(() => {
-      setLoading(false)
-      alert('Funcionalidade de login será implementada em breve!')
-    }, 1000)
+  const handleGoogleLogin = async () => {
+    try {
+      setError('')
+      await loginWithGoogle()
+      router.push('/')
+    } catch (error: any) {
+      setError('Erro ao fazer login com Google. Tente novamente.')
+      console.error('Erro no login:', error.message)
+    }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+  const handleAnonymousLogin = async () => {
+    try {
+      setError('')
+      await loginAnonymously()
+      router.push('/')
+    } catch (error: any) {
+      setError('Erro ao fazer login anônimo. Tente novamente.')
+      console.error('Erro no login anônimo:', error.message)
+    }
   }
 
   return (
@@ -43,55 +44,23 @@ export default function LoginPage() {
                 <p className="text-muted">Entre com suas credenciais</p>
               </div>
 
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    <i className="fas fa-envelope me-2"></i>
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="seu@email.com"
-                  />
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+                  {error}
                 </div>
+              )}
 
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">
-                    <i className="fas fa-lock me-2"></i>
-                    Senha
-                  </label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    placeholder="Sua senha"
-                  />
-                </div>
+              <div className="text-center mb-4">
+                <p className="text-muted">
+                  Escolha uma opção de login:
+                </p>
+              </div>
 
-                <div className="mb-3 form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="remember"
-                  />
-                  <label className="form-check-label" htmlFor="remember">
-                    Lembrar de mim
-                  </label>
-                </div>
-
+              <div className="d-grid gap-3">
                 <button
-                  type="submit"
-                  className="btn btn-primary w-100 mb-3"
+                  className="btn btn-primary"
+                  onClick={handleGoogleLogin}
                   disabled={loading}
                 >
                   {loading ? (
@@ -101,30 +70,46 @@ export default function LoginPage() {
                     </>
                   ) : (
                     <>
-                      <i className="fas fa-sign-in-alt me-2"></i>
-                      Entrar
+                      <i className="fab fa-google me-2"></i>
+                      Entrar com Google (Admin/Staff)
                     </>
                   )}
                 </button>
 
-                <div className="text-center">
-                  <Link href="/cadastro" className="text-decoration-none">
-                    Não tem uma conta? Cadastre-se
-                  </Link>
-                </div>
-              </form>
+                <button
+                  className="btn btn-outline-secondary"
+                  onClick={handleAnonymousLogin}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Entrando...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-user me-2"></i>
+                      Entrar Anonimamente (Cliente)
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="text-center mt-3">
+                <Link href="/cadastro" className="text-decoration-none">
+                  Não tem uma conta? Cadastre-se
+                </Link>
+              </div>
 
               <hr className="my-4" />
 
               <div className="text-center">
-                <button className="btn btn-outline-primary w-100 mb-2">
-                  <i className="fab fa-google me-2"></i>
-                  Entrar com Google
-                </button>
-                <button className="btn btn-outline-dark w-100">
-                  <i className="fab fa-facebook me-2"></i>
-                  Entrar com Facebook
-                </button>
+                <small className="text-muted">
+                  <i className="fas fa-info-circle me-1"></i>
+                  Login com Google é recomendado para administradores e funcionários.
+                  <br />
+                  Login anônimo é ideal para clientes que querem fazer pedidos rapidamente.
+                </small>
               </div>
             </div>
           </div>
