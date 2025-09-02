@@ -16,7 +16,6 @@ export default function CarrinhoPage() {
     total,
     subtotal,
     tax,
-    initialize,
     isReady,
     isEmpty
   } = useCart()
@@ -25,8 +24,6 @@ export default function CarrinhoPage() {
   const [cupom, setCupom] = useState('')
   const [cupomAplicado, setCupomAplicado] = useState(false)
   const [showAddressModal, setShowAddressModal] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [endereco, setEndereco] = useState({
     rua: 'Rua das Flores, 123',
     bairro: 'Centro',
@@ -36,110 +33,15 @@ export default function CarrinhoPage() {
     complemento: 'Apto 45'
   })
 
-  // Inicialização e verificação de segurança melhorada
-  useEffect(() => {
-    // Só executa se o carrinho estiver pronto e ainda estiver carregando
-    if (isReady && isLoading) {
-      const initializeCart = async () => {
-        try {
-          setError(null)
-          console.log('Inicializando carrinho...')
-
-          // Inicializa o carrinho
-          const success = initialize()
-          if (!success) {
-            throw new Error('Falha ao inicializar carrinho')
-          }
-
-          // Aguarda um pouco para garantir que o estado esteja estável
-          await new Promise(resolve => setTimeout(resolve, 200))
-
-          console.log('Carrinho inicializado com sucesso')
-          setIsLoading(false)
-        } catch (err) {
-          console.error('Erro ao inicializar carrinho:', err)
-          setError('Erro ao carregar o carrinho. Tente recarregar a página.')
-          setIsLoading(false)
-        }
-      }
-
-      initializeCart()
-    }
-  }, [isReady, isLoading, initialize])
-
-  // Verificação de segurança para evitar erros de renderização
+  // Se o carrinho não estiver pronto, mostra loading
   if (!isReady) {
     return (
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-md-6 text-center">
             <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
-            <h2>Inicializando carrinho...</h2>
-            <p className="text-muted">Aguarde enquanto configuramos o carrinho</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
             <h2>Carregando carrinho...</h2>
-            <p className="text-muted">Carregando seus itens</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <div className="alert alert-danger" role="alert">
-              <i className="fas fa-exclamation-triangle fa-3x mb-3"></i>
-              <h4>Erro ao carregar carrinho</h4>
-              <p>{error}</p>
-              <button
-                className="btn btn-primary"
-                onClick={() => window.location.reload()}
-              >
-                <i className="fas fa-redo me-2"></i>
-                Recarregar Página
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Validação adicional de segurança
-  if (!items || !Array.isArray(items)) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <div className="alert alert-warning" role="alert">
-              <i className="fas fa-exclamation-triangle fa-3x mb-3"></i>
-              <h4>Carrinho inválido</h4>
-              <p>O carrinho não pôde ser carregado corretamente.</p>
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  clearCart()
-                  window.location.reload()
-                }}
-              >
-                <i className="fas fa-redo me-2"></i>
-                Limpar e Recarregar
-              </button>
-            </div>
+            <p className="text-muted">Aguarde enquanto carregamos seus itens</p>
           </div>
         </div>
       </div>
@@ -147,7 +49,7 @@ export default function CarrinhoPage() {
   }
 
   // Mostra carrinho vazio se não há itens
-  if (isEmpty || items.length === 0) {
+  if (isEmpty || !items || items.length === 0) {
     return (
       <div className="container py-5">
         <div className="row justify-content-center">
@@ -234,48 +136,42 @@ export default function CarrinhoPage() {
         <div className="col-lg-8">
           <div className="d-flex align-items-center mb-4">
             <i className="fas fa-shopping-cart fa-2x text-primary me-3"></i>
-            <div>
-              <h1 className="h3 mb-0">Seu Carrinho</h1>
-              <small className="text-muted">{items.length} item(s)</small>
-            </div>
+            <h2 className="mb-0">Seu Carrinho</h2>
           </div>
 
           {/* Lista de Itens */}
-          <div className="card border-0 shadow-sm mb-4">
-            <div className="card-body">
-              {items.map(item => {
-                // Validação adicional para cada item
-                if (!item || !item.itemId || !item.name || typeof item.price !== 'number') {
-                  return null
-                }
-
-                return (
-                  <div key={item.itemId} className="row align-items-center py-3 border-bottom">
+          <div className="card shadow-sm mb-4">
+            <div className="card-header bg-light">
+              <h5 className="mb-0">
+                <i className="fas fa-list me-2"></i>
+                Itens ({items.length})
+              </h5>
+            </div>
+            <div className="card-body p-0">
+              {items.map((item) => (
+                <div key={item.itemId} className="border-bottom p-3">
+                  <div className="row align-items-center">
                     <div className="col-md-2">
-                      <div className="position-relative" style={{ width: '80px', height: '80px' }}>
+                      {item.image && (
                         <Image
-                          src={item.image || '/placeholder-food.svg'}
+                          src={item.image}
                           alt={item.name}
-                          fill
-                          className="rounded"
-                          style={{ objectFit: 'cover' }}
-                          onError={(e) => {
-                            // Fallback para imagem quebrada
-                            const target = e.target as HTMLImageElement
-                            target.src = '/placeholder-food.svg'
-                          }}
+                          width={80}
+                          height={80}
+                          className="img-fluid rounded"
                         />
-                      </div>
+                      )}
                     </div>
                     <div className="col-md-4">
                       <h6 className="mb-1">{item.name}</h6>
-                      <small className="text-muted">Restaurante</small>
+                      <small className="text-muted">R$ {item.price.toFixed(2)}</small>
                     </div>
-                    <div className="col-md-2">
-                      <div className="input-group input-group-sm">
+                    <div className="col-md-3">
+                      <div className="input-group input-group-sm" style={{ width: '120px' }}>
                         <button
                           className="btn btn-outline-secondary"
-                          onClick={() => updateQuantity(item.itemId, item.quantity - 1)}
+                          type="button"
+                          onClick={() => updateQuantity(item.itemId, Math.max(1, item.quantity - 1))}
                         >
                           <i className="fas fa-minus"></i>
                         </button>
@@ -283,15 +179,12 @@ export default function CarrinhoPage() {
                           type="number"
                           className="form-control text-center"
                           value={item.quantity}
-                          onChange={(e) => {
-                            const value = parseInt(e.target.value) || 0
-                            updateQuantity(item.itemId, value)
-                          }}
-                          min="0"
-                          style={{ width: '60px' }}
+                          onChange={(e) => updateQuantity(item.itemId, Math.max(1, parseInt(e.target.value) || 1))}
+                          min="1"
                         />
                         <button
                           className="btn btn-outline-secondary"
+                          type="button"
                           onClick={() => updateQuantity(item.itemId, item.quantity + 1)}
                         >
                           <i className="fas fa-plus"></i>
@@ -299,70 +192,64 @@ export default function CarrinhoPage() {
                       </div>
                     </div>
                     <div className="col-md-2 text-end">
-                      <strong>R$ {item.subtotal?.toFixed(2) || '0.00'}</strong>
-                      <div className="text-muted small">
-                        R$ {item.price?.toFixed(2) || '0.00'} cada
-                      </div>
+                      <strong>R$ {item.subtotal.toFixed(2)}</strong>
                     </div>
-                    <div className="col-md-2 text-end">
+                    <div className="col-md-1 text-end">
                       <button
                         className="btn btn-outline-danger btn-sm"
                         onClick={() => removeItem(item.itemId)}
+                        title="Remover item"
                       >
                         <i className="fas fa-trash"></i>
                       </button>
                     </div>
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Cupom de Desconto */}
-          <div className="card border-0 shadow-sm mb-4">
+          {/* Cupom */}
+          <div className="card shadow-sm mb-4">
             <div className="card-body">
-              <h6 className="card-title">
+              <h6 className="mb-3">
                 <i className="fas fa-tag me-2"></i>
                 Cupom de Desconto
               </h6>
-              {cupomAplicado ? (
-                <div className="alert alert-success">
-                  <i className="fas fa-check-circle me-2"></i>
-                  Cupom "DESCONTO10" aplicado! 10% de desconto.
+              <div className="d-flex gap-2">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Digite seu cupom"
+                  value={cupom}
+                  onChange={(e) => setCupom(e.target.value)}
+                  disabled={cupomAplicado}
+                />
+                {cupomAplicado ? (
                   <button
-                    className="btn btn-sm btn-outline-danger ms-2"
+                    className="btn btn-outline-danger"
                     onClick={removerCupom}
                   >
+                    <i className="fas fa-times me-2"></i>
                     Remover
                   </button>
-                </div>
-              ) : (
-                <div className="input-group">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Digite seu cupom"
-                    value={cupom}
-                    onChange={(e) => setCupom(e.target.value)}
-                  />
+                ) : (
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn-primary"
                     onClick={aplicarCupom}
                   >
+                    <i className="fas fa-check me-2"></i>
                     Aplicar
                   </button>
-                </div>
-              )}
-              <small className="text-muted">
-                Dica: Use o cupom "DESCONTO10" para 10% de desconto
-              </small>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Resumo do Pedido */}
         <div className="col-lg-4">
-          <div className="card border-0 shadow-sm sticky-top" style={{ top: '20px' }}>
+          <div className="card shadow-sm sticky-top" style={{ top: '2rem' }}>
             <div className="card-header bg-primary text-white">
               <h5 className="mb-0">
                 <i className="fas fa-receipt me-2"></i>
@@ -372,7 +259,7 @@ export default function CarrinhoPage() {
             <div className="card-body">
               <div className="d-flex justify-content-between mb-2">
                 <span>Subtotal:</span>
-                <span>R$ {typeof subtotal === 'number' && !isNaN(subtotal) ? subtotal.toFixed(2) : '0.00'}</span>
+                <span>R$ {subtotal.toFixed(2)}</span>
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Taxa de Entrega:</span>
@@ -380,8 +267,8 @@ export default function CarrinhoPage() {
               </div>
               {cupomAplicado && (
                 <div className="d-flex justify-content-between mb-2 text-success">
-                  <span>Desconto:</span>
-                  <span>- R$ {calcularDesconto().toFixed(2)}</span>
+                  <span>Desconto (10%):</span>
+                  <span>-R$ {calcularDesconto().toFixed(2)}</span>
                 </div>
               )}
               <hr />
@@ -389,193 +276,17 @@ export default function CarrinhoPage() {
                 <strong>Total:</strong>
                 <strong className="text-primary">R$ {calcularTotal().toFixed(2)}</strong>
               </div>
-
               <button
-                className="btn btn-primary w-100 mb-3"
+                className="btn btn-primary w-100 btn-lg"
                 onClick={finalizarPedido}
               >
                 <i className="fas fa-credit-card me-2"></i>
                 Finalizar Pedido
               </button>
-
-              <Link href="/restaurantes" className="btn btn-outline-primary w-100">
-                <i className="fas fa-plus me-2"></i>
-                Adicionar Mais Itens
-              </Link>
-            </div>
-          </div>
-
-          {/* Informações de Entrega */}
-          <div className="card border-0 shadow-sm mt-3">
-            <div className="card-body">
-              <h6 className="card-title">
-                <i className="fas fa-truck me-2"></i>
-                Informações de Entrega
-              </h6>
-              <div className="mb-2">
-                <small className="text-muted">Tempo estimado:</small>
-                <div className="fw-bold">30-45 minutos</div>
-              </div>
-              <div className="mb-2">
-                <small className="text-muted">Endereço:</small>
-                <div className="fw-bold">
-                  {endereco.rua}, {endereco.bairro}
-                  <br />
-                  {endereco.cidade} - {endereco.estado}
-                  <br />
-                  CEP: {endereco.cep}
-                  {endereco.complemento && (
-                    <>
-                      <br />
-                      {endereco.complemento}
-                    </>
-                  )}
-                </div>
-              </div>
-              <button
-                className="btn btn-sm btn-outline-secondary w-100"
-                onClick={() => setShowAddressModal(true)}
-              >
-                <i className="fas fa-edit me-1"></i>
-                Alterar Endereço
-              </button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Modal de Alterar Endereço */}
-      {showAddressModal && (
-        <div className="modal fade show" style={{ display: 'block', zIndex: 1070 }} tabIndex={-1}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  <i className="fas fa-map-marker-alt me-2"></i>
-                  Alterar Endereço de Entrega
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowAddressModal(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <AddressForm
-                  endereco={endereco}
-                  onSave={salvarEndereco}
-                  onCancel={() => setShowAddressModal(false)}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="modal-backdrop fade show" style={{ zIndex: 1065 }}></div>
-        </div>
-      )}
     </div>
-  )
-}
-
-// Componente do formulário de endereço
-function AddressForm({ endereco, onSave, onCancel }: any) {
-  const [formData, setFormData] = useState(endereco)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSave(formData)
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <div className="row">
-        <div className="col-12 mb-3">
-          <label htmlFor="rua" className="form-label">Rua e Número *</label>
-          <input
-            type="text"
-            className="form-control"
-            id="rua"
-            name="rua"
-            value={formData.rua}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="col-md-6 mb-3">
-          <label htmlFor="bairro" className="form-label">Bairro *</label>
-          <input
-            type="text"
-            className="form-control"
-            id="bairro"
-            name="bairro"
-            value={formData.bairro}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="col-md-6 mb-3">
-          <label htmlFor="cidade" className="form-label">Cidade *</label>
-          <input
-            type="text"
-            className="form-control"
-            id="cidade"
-            name="cidade"
-            value={formData.cidade}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="col-md-6 mb-3">
-          <label htmlFor="estado" className="form-label">Estado *</label>
-          <input
-            type="text"
-            className="form-control"
-            id="estado"
-            name="estado"
-            value={formData.estado}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="col-md-6 mb-3">
-          <label htmlFor="cep" className="form-label">CEP *</label>
-          <input
-            type="text"
-            className="form-control"
-            id="cep"
-            name="cep"
-            value={formData.cep}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="col-12 mb-3">
-          <label htmlFor="complemento" className="form-label">Complemento</label>
-          <input
-            type="text"
-            className="form-control"
-            id="complemento"
-            name="complemento"
-            value={formData.complemento}
-            onChange={handleChange}
-            placeholder="Apartamento, bloco, etc."
-          />
-        </div>
-      </div>
-      <div className="d-flex gap-2 justify-content-end">
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>
-          Cancelar
-        </button>
-        <button type="submit" className="btn btn-primary">
-          Salvar Endereço
-        </button>
-      </div>
-    </form>
   )
 }
