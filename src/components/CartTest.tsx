@@ -15,7 +15,7 @@ export default function CartTest() {
   return (
     <div className="position-fixed bottom-0 start-0 m-3 p-3 bg-info text-white" style={{ zIndex: 1070, fontSize: '12px', maxWidth: '300px' }}>
       <h6 className="mb-2">🧪 Teste do Carrinho</h6>
-      
+
       <div className="mb-2">
         <strong>Context:</strong>
         <div>Hydrated: {context.isHydrated ? '✅' : '❌'}</div>

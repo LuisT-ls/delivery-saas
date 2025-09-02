@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/lib/use-cart'
 import { useAuthContext } from '@/components/AuthProvider'
@@ -36,42 +36,34 @@ export default function CarrinhoPage() {
     complemento: 'Apto 45'
   })
 
-  // Função de inicialização memoizada para evitar loops
-  const initializeCart = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-
-      // Aguarda o carrinho estar pronto
-      if (!isReady) {
-        console.log('Aguardando carrinho estar pronto...')
-        return
-      }
-
-      // Inicializa o carrinho
-      const success = initialize()
-      if (!success) {
-        throw new Error('Falha ao inicializar carrinho')
-      }
-
-      // Aguarda um pouco para garantir que o estado esteja estável
-      await new Promise(resolve => setTimeout(resolve, 100))
-
-      setIsLoading(false)
-    } catch (err) {
-      console.error('Erro ao inicializar carrinho:', err)
-      setError('Erro ao carregar o carrinho. Tente recarregar a página.')
-      setIsLoading(false)
-    }
-  }, [initialize, isReady])
-
   // Inicialização e verificação de segurança melhorada
   useEffect(() => {
-    // Só executa se o carrinho estiver pronto
-    if (isReady && !isLoading) {
+    // Só executa se o carrinho estiver pronto e não estiver carregando
+    if (isReady && isLoading) {
+      const initializeCart = async () => {
+        try {
+          setError(null)
+
+          // Inicializa o carrinho
+          const success = initialize()
+          if (!success) {
+            throw new Error('Falha ao inicializar carrinho')
+          }
+
+          // Aguarda um pouco para garantir que o estado esteja estável
+          await new Promise(resolve => setTimeout(resolve, 100))
+
+          setIsLoading(false)
+        } catch (err) {
+          console.error('Erro ao inicializar carrinho:', err)
+          setError('Erro ao carregar o carrinho. Tente recarregar a página.')
+          setIsLoading(false)
+        }
+      }
+
       initializeCart()
     }
-  }, [isReady, initializeCart])
+  }, [isReady, isLoading, initialize])
 
   // Verificação de segurança para evitar erros de renderização
   if (isLoading) {
@@ -81,6 +73,10 @@ export default function CarrinhoPage() {
           <div className="col-md-6 text-center">
             <i className="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
             <h2>Carregando carrinho...</h2>
+            <p className="text-muted">
+              {!isReady && 'Inicializando carrinho...'}
+              {isReady && isLoading && 'Carregando itens...'}
+            </p>
           </div>
         </div>
       </div>

@@ -23,7 +23,6 @@ export default function CartProvider({ children }: CartProviderProps) {
   // Refs para controlar o estado e evitar loops
   const hasInitialized = useRef(false);
   const hasHydrated = useRef(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -82,23 +81,10 @@ export default function CartProvider({ children }: CartProviderProps) {
         initializeCart();
       }
 
-      // Fallback: se a hidratação demorar muito, tenta inicializar
-      timeoutRef.current = setTimeout(() => {
-        if (!hasHydrated.current && !hasInitialized.current) {
-          console.warn('Hidratação demorou muito, tentando inicializar...');
-          setIsHydrated(true);
-          hasHydrated.current = true;
-          initializeCart();
-        }
-      }, 2000); // Aumentado para 2 segundos
-
       return () => {
         // Cleanup
         if (unsubscribeRef.current) {
           unsubscribeRef.current();
-        }
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
         }
       };
     } catch (err) {

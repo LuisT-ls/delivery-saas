@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useCartStore } from './cart-store';
 import { useCartContext } from '@/components/CartProvider';
 
@@ -14,7 +14,7 @@ export function useCart() {
   }, [isHydrated, isInitialized]);
 
   // Função para adicionar item com validação
-  const addItem = (item: any, quantity: number = 1) => {
+  const addItem = useCallback((item: any, quantity: number = 1) => {
     if (!isReady) {
       console.warn('Carrinho não está pronto ainda');
       return false;
@@ -27,10 +27,10 @@ export function useCart() {
       console.error('Erro ao adicionar item:', error);
       return false;
     }
-  };
+  }, [store, isReady]);
 
   // Função para remover item com validação
-  const removeItem = (itemId: string) => {
+  const removeItem = useCallback((itemId: string) => {
     if (!isReady) {
       console.warn('Carrinho não está pronto ainda');
       return false;
@@ -43,10 +43,10 @@ export function useCart() {
       console.error('Erro ao remover item:', error);
       return false;
     }
-  };
+  }, [store, isReady]);
 
   // Função para atualizar quantidade com validação
-  const updateQuantity = (itemId: string, quantity: number) => {
+  const updateQuantity = useCallback((itemId: string, quantity: number) => {
     if (!isReady) {
       console.warn('Carrinho não está pronto ainda');
       return false;
@@ -59,10 +59,10 @@ export function useCart() {
       console.error('Erro ao atualizar quantidade:', error);
       return false;
     }
-  };
+  }, [store, isReady]);
 
   // Função para limpar carrinho com validação
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     if (!isReady) {
       console.warn('Carrinho não está pronto ainda');
       return false;
@@ -75,10 +75,10 @@ export function useCart() {
       console.error('Erro ao limpar carrinho:', error);
       return false;
     }
-  };
+  }, [store, isReady]);
 
   // Função para inicializar carrinho com validação
-  const initialize = () => {
+  const initialize = useCallback(() => {
     if (!isReady) {
       console.warn('Carrinho não está pronto ainda');
       return false;
@@ -91,7 +91,18 @@ export function useCart() {
       console.error('Erro ao inicializar carrinho:', error);
       return false;
     }
-  };
+  }, [store, isReady]);
+
+  // Memoiza os valores para evitar re-renders desnecessários
+  const itemCount = useMemo(() => 
+    store.items.reduce((sum, item) => sum + item.quantity, 0), 
+    [store.items]
+  );
+
+  const isEmpty = useMemo(() => 
+    store.items.length === 0, 
+    [store.items.length]
+  );
 
   return {
     // Estado
@@ -117,7 +128,7 @@ export function useCart() {
     calculateTotals: store.calculateTotals,
     
     // Utilitários
-    itemCount: store.items.reduce((sum, item) => sum + item.quantity, 0),
-    isEmpty: store.items.length === 0
+    itemCount,
+    isEmpty
   };
 }

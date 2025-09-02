@@ -9,7 +9,7 @@ import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration'
 import CartWidget from '@/components/CartWidget'
 import CartProvider from '@/components/CartProvider'
 import CartNotification from '@/components/CartNotification'
-import CartTest from '@/components/CartTest'
+import CartStatus from '@/components/CartStatus'
 import { AuthProvider } from '@/components/AuthProvider'
 import ErrorBoundary from '@/components/ErrorBoundary'
 
@@ -41,7 +41,7 @@ export default function RootLayout({
               </div>
               <CartWidget />
               <CartNotification />
-              <CartTest />
+              <CartStatus />
             </CartProvider>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
             <ServiceWorkerRegistration />
