@@ -119,6 +119,11 @@ vercel --prod
 
 ```
 delivery-saas/
+├── docs/               # 📚 Documentação completa do projeto
+│   ├── README.md       # Índice da documentação
+│   ├── INSTALACAO.md   # Guia de instalação
+│   ├── FIREBASE-SETUP.md # Configuração do Firebase
+│   └── ...            # Outros arquivos de documentação
 ├── public/
 │   ├── icons/           # Ícones do PWA
 │   ├── manifest.json    # Manifesto do PWA
@@ -140,6 +145,16 @@ delivery-saas/
 ├── next.config.js
 └── env.example         # Exemplo de variáveis de ambiente
 ```
+
+## 📚 Documentação
+
+Toda a documentação técnica do projeto está organizada na pasta [`docs/`](./docs/):
+
+- **📖 [Índice da Documentação](./docs/README.md)** - Visão geral de todos os documentos
+- **🚀 [Guia de Instalação](./docs/INSTALACAO.md)** - Configuração completa do ambiente
+- **🔥 [Configuração Firebase](./docs/FIREBASE-SETUP.md)** - Setup detalhado do Firebase
+- **🛠️ [Guia de Deploy](./docs/DEPLOY.md)** - Deploy em produção
+- **🔧 [Correções e Soluções](./docs/)** - Soluções para problemas comuns
 
 ## 🔧 Funcionalidades Implementadas
 
