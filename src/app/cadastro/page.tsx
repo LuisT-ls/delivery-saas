@@ -141,13 +141,13 @@ export default function CadastroPage() {
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-6">
+        <div className="col-12 col-md-6">
           <div className="card shadow auth-card">
-            <div className="card-body p-5">
+            <div className="card-body p-4 p-md-5">
               <div className="text-center mb-4">
-                <i className="fas fa-user-plus fa-3x text-primary mb-3"></i>
-                <h2 className="card-title">Criar Conta</h2>
-                <p className="text-muted">Preencha seus dados para se cadastrar</p>
+                <i className="fas fa-user-plus fa-md-3x text-primary mb-3"></i>
+                <h2 className="card-title h2-responsive">Criar Conta</h2>
+                <p className="text-muted h5-responsive">Preencha seus dados para se cadastrar</p>
               </div>
 
               {submitError && (
@@ -162,105 +162,103 @@ export default function CadastroPage() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit}>
-                <div className="row">
-                  <div className="col-md-12 mb-3">
-                    <label htmlFor="nome" className="form-label">
-                      <i className="fas fa-user me-2"></i>
-                      Nome Completo
-                    </label>
-                    <input
-                      type="text"
-                      className={`form-control ${errors.nome ? 'is-invalid' : ''}`}
-                      id="nome"
-                      name="nome"
-                      value={formData.nome}
-                      onChange={handleChange}
-                      required
-                      placeholder="Seu nome completo"
-                      disabled={isSubmitting}
-                    />
-                    {errors.nome && <div className="invalid-feedback">{errors.nome}</div>}
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="email" className="form-label">
-                      <i className="fas fa-envelope me-2"></i>
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="seu@email.com"
-                      disabled={isSubmitting}
-                    />
-                    {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="telefone" className="form-label">
-                      <i className="fas fa-phone me-2"></i>
-                      Telefone
-                    </label>
-                    <input
-                      type="tel"
-                      className={`form-control ${errors.telefone ? 'is-invalid' : ''}`}
-                      id="telefone"
-                      name="telefone"
-                      value={formData.telefone}
-                      onChange={handleChange}
-                      required
-                      placeholder="(11) 99999-9999"
-                      disabled={isSubmitting}
-                    />
-                    {errors.telefone && <div className="invalid-feedback">{errors.telefone}</div>}
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="password" className="form-label">
-                      <i className="fas fa-lock me-2"></i>
-                      Senha
-                    </label>
-                    <input
-                      type="password"
-                      className={`form-control ${errors.password ? 'is-invalid' : ''}`}
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                      placeholder="Mínimo 6 caracteres"
-                      disabled={isSubmitting}
-                    />
-                    {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-                  </div>
-
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="confirmPassword" className="form-label">
-                      <i className="fas fa-lock me-2"></i>
-                      Confirmar Senha
-                    </label>
-                    <input
-                      type="password"
-                      className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                      placeholder="Confirme sua senha"
-                      disabled={isSubmitting}
-                    />
-                    {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
-                  </div>
+              <form onSubmit={handleSubmit} className="auth-form">
+                <div className="mb-3">
+                  <label htmlFor="nome" className="form-label">
+                    <i className="fas fa-user me-2"></i>
+                    Nome Completo
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.nome ? 'is-invalid' : ''}`}
+                    id="nome"
+                    name="nome"
+                    value={formData.nome}
+                    onChange={handleChange}
+                    required
+                    placeholder="Seu nome completo"
+                    disabled={isSubmitting}
+                  />
+                  {errors.nome && <div className="invalid-feedback">{errors.nome}</div>}
                 </div>
 
-                <div className="mb-3 form-check">
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label">
+                    <i className="fas fa-envelope me-2"></i>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="seu@email.com"
+                    disabled={isSubmitting}
+                  />
+                  {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="telefone" className="form-label">
+                    <i className="fas fa-phone me-2"></i>
+                    Telefone
+                  </label>
+                  <input
+                    type="tel"
+                    className={`form-control ${errors.telefone ? 'is-invalid' : ''}`}
+                    id="telefone"
+                    name="telefone"
+                    value={formData.telefone}
+                    onChange={handleChange}
+                    required
+                    placeholder="(11) 99999-9999"
+                    disabled={isSubmitting}
+                  />
+                  {errors.telefone && <div className="invalid-feedback">{errors.telefone}</div>}
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="password" className="form-label">
+                    <i className="fas fa-lock me-2"></i>
+                    Senha
+                  </label>
+                  <input
+                    type="password"
+                    className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    placeholder="Mínimo 6 caracteres"
+                    disabled={isSubmitting}
+                  />
+                  {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="confirmPassword" className="form-label">
+                    <i className="fas fa-lock me-2"></i>
+                    Confirmar Senha
+                  </label>
+                  <input
+                    type="password"
+                    className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    placeholder="Confirme sua senha"
+                    disabled={isSubmitting}
+                  />
+                  {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
+                </div>
+
+                <div className="mb-4 form-check">
                   <input
                     type="checkbox"
                     className="form-check-input"
@@ -273,26 +271,29 @@ export default function CadastroPage() {
                   </label>
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary w-100 mb-3"
-                  disabled={isSubmitting || !isFormValid()}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Criando conta...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fas fa-user-plus me-2"></i>
-                      Criar Conta
-                    </>
-                  )}
-                </button>
+                <div className="d-grid d-md-block text-md-end">
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-100 w-md-auto"
+                    disabled={isSubmitting || !isFormValid()}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Criando conta...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-user-plus me-2"></i>
+                        Criar Conta
+                      </>
+                    )}
+                  </button>
+                </div>
 
-                <div className="text-center">
-                  <Link href="/login" className="text-decoration-none">
+                <div className="text-center mt-4">
+                  <Link href="/login" className="text-decoration-none h5-responsive fw-semibold">
+                    <i className="fas fa-sign-in-alt me-2"></i>
                     Já tem uma conta? Faça login
                   </Link>
                 </div>
