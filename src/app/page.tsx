@@ -78,7 +78,7 @@ export default function Home() {
       <div className="row">
         <div className="col-12 text-center">
           <div className="bg-light p-5 rounded">
-            <h3 className="fw-bold mb-3">Pronto para começar?</h3>
+            <h3 className="fw-bold mb-3 text-dark">Pronto para começar?</h3>
             <p className="text-muted mb-4">
               Junte-se a centenas de restaurantes que já confiam no nosso sistema.
             </p>

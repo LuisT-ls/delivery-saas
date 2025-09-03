@@ -54,9 +54,9 @@ export default function CarrinhoPage() {
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-md-6 text-center">
-            <i className="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+            <i className="fas fa-shopping-cart fa-3x text-secondary mb-3"></i>
             <h2>Carrinho Vazio</h2>
-            <p className="text-muted mb-4">
+            <p className="text-secondary mb-4">
               Seu carrinho está vazio. Adicione alguns itens deliciosos!
             </p>
             <Link href="/restaurantes" className="btn btn-primary btn-lg">

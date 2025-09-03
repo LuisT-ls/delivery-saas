@@ -96,7 +96,7 @@ export default function RestaurantesPage() {
           <div className="text-center mb-5">
             <i className="fas fa-store fa-3x text-primary mb-3"></i>
             <h1 className="display-4">Restaurantes</h1>
-            <p className="lead text-muted">
+            <p className="lead text-secondary">
               Encontre os melhores restaurantes da sua região
             </p>
           </div>
@@ -218,22 +218,22 @@ export default function RestaurantesPage() {
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-store fa-2x text-primary mb-2"></i>
               <h4>{mockRestaurantes.length}+</h4>
-              <small className="text-muted">Restaurantes</small>
+              <small className="text-secondary">Restaurantes</small>
             </div>
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-utensils fa-2x text-primary mb-2"></i>
               <h4>{categorias.length}</h4>
-              <small className="text-muted">Categorias</small>
+              <small className="text-secondary">Categorias</small>
             </div>
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-star fa-2x text-primary mb-2"></i>
               <h4>4.7</h4>
-              <small className="text-muted">Avaliação Média</small>
+              <small className="text-secondary">Avaliação Média</small>
             </div>
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-clock fa-2x text-primary mb-2"></i>
               <h4>30 min</h4>
-              <small className="text-muted">Tempo Médio</small>
+              <small className="text-secondary">Tempo Médio</small>
             </div>
           </div>
         </div>
