@@ -31,7 +31,7 @@ export default function Home() {
       <div className="row mb-5">
         <div className="col-12 text-center mb-4">
           <h2 className="fw-bold">Recursos Principais</h2>
-          <p className="text-muted">Tudo que você precisa para gerenciar seu delivery</p>
+          <p className="text-secondary">Tudo que você precisa para gerenciar seu delivery</p>
         </div>
 
         <div className="col-md-4 mb-4">

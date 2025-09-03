@@ -42,25 +42,25 @@ export default function Navbar() {
         <div className={`${isNavCollapsed ? 'collapse' : ''} navbar-collapse`} id="navbarNav">
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <Link href="/" className="nav-link">
+              <Link href="/" className="nav-link text-light">
                 <i className="fas fa-home me-1"></i>
                 Início
               </Link>
             </li>
             <li className="nav-item">
-              <Link href="/menu" className="nav-link">
+              <Link href="/menu" className="nav-link text-light">
                 <i className="fas fa-list me-1"></i>
                 Cardápio
               </Link>
             </li>
             <li className="nav-item">
-              <Link href="/restaurantes" className="nav-link">
+              <Link href="/restaurantes" className="nav-link text-light">
                 <i className="fas fa-store me-1"></i>
                 Restaurantes
               </Link>
             </li>
             <li className="nav-item">
-              <Link href="/sobre" className="nav-link">
+              <Link href="/sobre" className="nav-link text-light">
                 <i className="fas fa-info-circle me-1"></i>
                 Sobre
               </Link>
@@ -71,7 +71,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <a className="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i className="fas fa-user me-1"></i>
                     {user?.displayName || user?.email || 'Usuário'}
                   </a>
@@ -106,7 +106,7 @@ export default function Navbar() {
                   </ul>
                 </li>
                 <li className="nav-item">
-                  <Link href="/carrinho" className="nav-link">
+                  <Link href="/carrinho" className="nav-link text-light">
                     <i className="fas fa-shopping-cart me-1"></i>
                     Carrinho
                   </Link>
@@ -115,19 +115,19 @@ export default function Navbar() {
             ) : (
               <>
                 <li className="nav-item">
-                  <Link href="/login" className="nav-link">
+                  <Link href="/login" className="nav-link text-light">
                     <i className="fas fa-sign-in-alt me-1"></i>
                     Login
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link href="/cadastro" className="nav-link">
+                  <Link href="/cadastro" className="nav-link text-light">
                     <i className="fas fa-user-plus me-1"></i>
                     Cadastro
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link href="/carrinho" className="nav-link">
+                  <Link href="/carrinho" className="nav-link text-light">
                     <i className="fas fa-shopping-cart me-1"></i>
                     Carrinho
                   </Link>

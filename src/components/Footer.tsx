@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="container">
         <div className="row">
           <div className="col-md-4">
-            <h5>
+            <h5 className="text-dark">
               <i className="fas fa-utensils me-2"></i>
               Delivery SaaS
             </h5>
@@ -15,7 +15,7 @@ export default function Footer() {
           </div>
 
           <div className="col-md-4">
-            <h6>Links Úteis</h6>
+            <h6 className="text-dark">Links Úteis</h6>
             <ul className="list-unstyled">
               <li><a href="/sobre" className="text-decoration-none text-muted">Sobre Nós</a></li>
               <li><a href="/termos" className="text-decoration-none text-muted">Termos de Uso</a></li>
@@ -25,7 +25,7 @@ export default function Footer() {
           </div>
 
           <div className="col-md-4">
-            <h6>Redes Sociais</h6>
+            <h6 className="text-dark">Redes Sociais</h6>
             <div className="d-flex gap-3">
               <a href="#" className="text-decoration-none text-muted">
                 <i className="fab fa-facebook fa-lg"></i>
@@ -48,7 +48,7 @@ export default function Footer() {
         <div className="row align-items-center">
           <div className="col-md-6">
             <p className="text-muted mb-0">
-              © 2024 Delivery SaaS. Todos os direitos reservados.
+              © 2025 Delivery SaaS. Todos os direitos reservados.
             </p>
           </div>
           <div className="col-md-6 text-md-end">
