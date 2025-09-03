@@ -1,4 +1,16 @@
+'use client'
+
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
 export default function Home() {
+  const router = useRouter()
+
+  const handleVerDemo = () => {
+    // Redirecionar para uma página de demonstração ou abrir modal
+    router.push('/demo')
+  }
+
   return (
     <div className="container-fluid px-3 px-md-4 px-lg-5 py-4 py-md-5">
       {/* Hero Section */}
@@ -12,11 +24,14 @@ export default function Home() {
             Gerencie pedidos, cardápios e entregas em tempo real.
           </p>
           <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-            <button className="btn btn-primary btn-lg w-100 w-sm-auto">
+            <Link href="/cadastro" className="btn btn-primary btn-lg w-100 w-sm-auto text-decoration-none">
               <i className="fas fa-rocket me-2"></i>
               Começar Agora
-            </button>
-            <button className="btn btn-outline-secondary btn-lg w-100 w-sm-auto">
+            </Link>
+            <button
+              className="btn btn-outline-secondary btn-lg w-100 w-sm-auto"
+              onClick={handleVerDemo}
+            >
               <i className="fas fa-play me-2"></i>
               Ver Demo
             </button>
@@ -84,10 +99,10 @@ export default function Home() {
             <p className="text-muted mb-4 text-break px-2">
               Junte-se a centenas de restaurantes que já confiam no nosso sistema.
             </p>
-            <button className="btn btn-primary btn-lg w-100 w-sm-auto">
+            <Link href="/cadastro" className="btn btn-primary btn-lg w-100 w-sm-auto text-decoration-none">
               <i className="fas fa-user-plus me-2"></i>
               Criar Conta Gratuita
-            </button>
+            </Link>
           </div>
         </div>
       </div>
