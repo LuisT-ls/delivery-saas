@@ -33,6 +33,104 @@ body {
   border-top: 1px solid #dee2e6;
 }
 
+/* Responsive Typography Classes */
+.h2-responsive {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.h3-responsive {
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+}
+
+.h5-responsive {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+}
+
+/* Responsive Display Classes */
+.display-md-3 {
+  font-size: clamp(2rem, 5vw, 2.5rem);
+}
+
+.display-lg-4 {
+  font-size: clamp(2.5rem, 6vw, 3rem);
+}
+
+/* Responsive Icon Sizes */
+.fa-md-3x {
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+}
+
+/* Hero Section Responsive */
+.hero-icon {
+  transition: transform 0.3s ease;
+}
+
+.hero-icon:hover {
+  transform: scale(1.05);
+}
+
+/* Feature Cards Responsive */
+.feature-card {
+  transition: all 0.3s ease;
+  min-height: 200px;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Responsive Spacing Utilities */
+@media (max-width: 767.98px) {
+  .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .hero-icon {
+    margin-bottom: 1rem;
+  }
+
+  .feature-card .card-body {
+    padding: 1.5rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .container-fluid {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .display-4 {
+    font-size: 1.75rem !important;
+  }
+
+  .lead {
+    font-size: 1rem !important;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Ensure text doesn't overflow on small screens */
+.text-break {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Responsive button behavior */
+@media (max-width: 575.98px) {
+  .btn {
+    white-space: normal;
+    height: auto;
+    min-height: 44px; /* Touch-friendly minimum height */
+  }
+}
+
 /* Product card styles */
 .product-card {
   transition: transform 0.2s;
