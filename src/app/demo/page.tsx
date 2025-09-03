@@ -130,7 +130,7 @@ export default function DemoPage() {
             <div className="col-12 col-lg-8 mx-auto">
               <div className="text-center mb-5">
                 <h3 className="fw-bold mb-4">Como Funciona</h3>
-                <p className="text-muted">
+                <p className="contact-text-light">
                   Em apenas 4 passos simples, você terá seu restaurante funcionando online
                 </p>
               </div>
@@ -161,7 +161,7 @@ export default function DemoPage() {
             <div className="col-12">
               <div className="text-center mb-5">
                 <h3 className="fw-bold mb-4">Recursos Principais</h3>
-                <p className="text-muted">
+                <p className="contact-text-light">
                   Descubra todas as funcionalidades que tornam nosso sistema único
                 </p>
               </div>
@@ -191,7 +191,7 @@ export default function DemoPage() {
             <div className="col-12 col-lg-10 mx-auto">
               <div className="text-center mb-5">
                 <h3 className="fw-bold mb-4">Planos e Preços</h3>
-                <p className="text-muted">
+                <p className="contact-text-light">
                   Escolha o plano ideal para o seu restaurante
                 </p>
               </div>
