@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 export default function SobrePage() {
   return (
     <div className="container py-5">
@@ -87,7 +89,7 @@ export default function SobrePage() {
                 <small className="text-muted">Framework React</small>
               </div>
               <div className="col-md-3 mb-3">
-                <i className="fas fa-fire fa-2x text-warning mb-2"></i>
+                <Image src="https://img.icons8.com/color/48/firebase.png" alt="Firebase" width={48} height={48} className="mb-2" />
                 <h6 className="text-dark">Firebase</h6>
                 <small className="text-muted">Backend & Database</small>
               </div>
@@ -97,7 +99,7 @@ export default function SobrePage() {
                 <small className="text-muted">UI Framework</small>
               </div>
               <div className="col-md-3 mb-3">
-                <i className="fas fa-code fa-2x text-info mb-2"></i>
+                <Image src="https://img.icons8.com/color/48/typescript.png" alt="TypeScript" width={48} height={48} className="mb-2" />
                 <h6 className="text-dark">TypeScript</h6>
                 <small className="text-muted">Linguagem</small>
               </div>
