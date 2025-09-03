@@ -86,20 +86,20 @@ export default function ContatoPage() {
           <div className="text-center mt-4 mt-md-5">
             <h5 className="text-primary mb-3 h5-responsive">Outras Formas de Contato</h5>
             <div className="d-flex flex-column flex-sm-row justify-content-center gap-3 gap-md-4 mb-4">
-              <a href="#" className="text-decoration-none text-muted contact-social-link">
+              <a href="#" className="text-decoration-none contact-social-link contact-text-light">
                 <i className="fab fa-whatsapp fa-2x fa-md-3x"></i>
                 <div className="mt-2">WhatsApp</div>
               </a>
-              <a href="#" className="text-decoration-none text-muted contact-social-link">
+              <a href="#" className="text-decoration-none contact-social-link contact-text-light">
                 <i className="fab fa-telegram fa-2x fa-md-3x"></i>
                 <div className="mt-2">Telegram</div>
               </a>
-              <a href="#" className="text-decoration-none text-muted contact-social-link">
+              <a href="#" className="text-decoration-none contact-social-link contact-text-light">
                 <i className="fab fa-discord fa-2x fa-md-3x"></i>
                 <div className="mt-2">Discord</div>
               </a>
             </div>
-            <p className="text-muted text-break px-2">
+            <p className="contact-text-light text-break px-2">
               Para suporte técnico urgente, utilize nosso chat online disponível 24/7
             </p>
           </div>

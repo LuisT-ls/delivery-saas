@@ -827,3 +827,13 @@ body {
     font-size: 0.85rem;
   }
 }
+
+/* Contact Text Light - Better readability */
+.contact-text-light {
+  color: #8e9aaf !important;
+  font-weight: 500;
+}
+
+.contact-text-light:hover {
+  color: #6c757d !important;
+}
