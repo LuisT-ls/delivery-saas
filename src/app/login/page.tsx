@@ -35,13 +35,13 @@ export default function LoginPage() {
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
-        <div className="col-md-6 col-lg-4">
-          <div className="card shadow">
-            <div className="card-body p-5">
+        <div className="col-12 col-md-8 col-lg-6 col-xl-4">
+          <div className="card shadow auth-card">
+            <div className="card-body p-4 p-md-5">
               <div className="text-center mb-4">
-                <i className="fas fa-sign-in-alt fa-3x text-primary mb-3"></i>
-                <h2 className="card-title">Login</h2>
-                <p className="text-muted">Entre com suas credenciais</p>
+                <i className="fas fa-sign-in-alt fa-md-3x text-primary mb-3"></i>
+                <h2 className="card-title h2-responsive">Login</h2>
+                <p className="text-muted h5-responsive">Entre com suas credenciais</p>
               </div>
 
               {error && (
@@ -52,14 +52,14 @@ export default function LoginPage() {
               )}
 
               <div className="text-center mb-4">
-                <p className="text-muted">
+                <p className="text-muted h5-responsive">
                   Escolha uma opção de login:
                 </p>
               </div>
 
               <div className="d-grid gap-3">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-primary w-100"
                   onClick={handleGoogleLogin}
                   disabled={loading}
                 >
@@ -71,13 +71,14 @@ export default function LoginPage() {
                   ) : (
                     <>
                       <i className="fab fa-google me-2"></i>
-                      Entrar com Google (Admin/Staff)
+                      <span className="d-none d-md-inline">Entrar com Google (Admin/Staff)</span>
+                      <span className="d-md-none">Entrar com Google</span>
                     </>
                   )}
                 </button>
 
                 <button
-                  className="btn btn-outline-secondary"
+                  className="btn btn-outline-secondary w-100"
                   onClick={handleAnonymousLogin}
                   disabled={loading}
                 >
@@ -89,14 +90,15 @@ export default function LoginPage() {
                   ) : (
                     <>
                       <i className="fas fa-user me-2"></i>
-                      Entrar Anonimamente (Cliente)
+                      <span className="d-none d-md-inline">Entrar Anonimamente (Cliente)</span>
+                      <span className="d-md-none">Entrar Anonimamente</span>
                     </>
                   )}
                 </button>
               </div>
 
-              <div className="text-center mt-3">
-                <Link href="/cadastro" className="text-decoration-none">
+              <div className="text-center mt-4">
+                <Link href="/cadastro" className="text-decoration-none h5-responsive">
                   Não tem uma conta? Cadastre-se
                 </Link>
               </div>
@@ -106,9 +108,14 @@ export default function LoginPage() {
               <div className="text-center">
                 <small className="text-muted">
                   <i className="fas fa-info-circle me-1"></i>
-                  Login com Google é recomendado para administradores e funcionários.
-                  <br />
-                  Login anônimo é ideal para clientes que querem fazer pedidos rapidamente.
+                  <span className="d-none d-md-inline">
+                    Login com Google é recomendado para administradores e funcionários.
+                    <br />
+                    Login anônimo é ideal para clientes que querem fazer pedidos rapidamente.
+                  </span>
+                  <span className="d-md-none">
+                    Login com Google para administradores, anônimo para clientes.
+                  </span>
                 </small>
               </div>
             </div>
