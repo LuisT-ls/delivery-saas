@@ -89,7 +89,7 @@ export default function SobrePage() {
                 <small className="text-muted">Framework React</small>
               </div>
               <div className="col-md-3 mb-3">
-                <Image src="https://img.icons8.com/color/48/firebase.png" alt="Firebase" width={48} height={48} className="mb-2" />
+                <Image src="/sobre/icons/icons8-console-do-google-firebase.svg" alt="Firebase" width={48} height={48} className="mb-2" />
                 <h6 className="text-dark">Firebase</h6>
                 <small className="text-muted">Backend & Database</small>
               </div>
@@ -99,7 +99,7 @@ export default function SobrePage() {
                 <small className="text-muted">UI Framework</small>
               </div>
               <div className="col-md-3 mb-3">
-                <Image src="https://img.icons8.com/color/48/typescript.png" alt="TypeScript" width={48} height={48} className="mb-2" />
+                <Image src="/sobre/icons/icons8-texto-datilografado.svg" alt="TypeScript" width={48} height={48} className="mb-2" />
                 <h6 className="text-dark">TypeScript</h6>
                 <small className="text-muted">Linguagem</small>
               </div>
