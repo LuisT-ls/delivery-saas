@@ -84,7 +84,7 @@ export default function SobrePage() {
             <h3 className="text-center mb-4 text-dark">Tecnologias Utilizadas</h3>
             <div className="row text-center">
               <div className="col-md-3 mb-3">
-                <i className="fab fa-react fa-2x text-primary mb-2"></i>
+                <Image src="/icons/nextjs.svg" alt="Next.js" width={48} height={48} className="mb-2" />
                 <h6 className="text-dark">Next.js</h6>
                 <small className="text-muted">Framework React</small>
               </div>
@@ -94,7 +94,7 @@ export default function SobrePage() {
                 <small className="text-muted">Backend & Database</small>
               </div>
               <div className="col-md-3 mb-3">
-                <i className="fab fa-bootstrap fa-2x text-primary mb-2"></i>
+                <Image src="/icons/bootstrap.svg" alt="Bootstrap" width={48} height={48} className="mb-2" />
                 <h6 className="text-dark">Bootstrap</h6>
                 <small className="text-muted">UI Framework</small>
               </div>
