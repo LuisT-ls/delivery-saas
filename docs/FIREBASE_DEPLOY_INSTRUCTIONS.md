@@ -184,7 +184,7 @@ firebase use delivery-saas-7055a
   "userId123": {
     "name": "Nome do Restaurante",
     "address": "Endereço Completo",
-    "phone": "(11) 99999-9999",
+    "phone": "(71) 99999-9999",
     "ownerId": "userId123",
     "createdAt": "timestamp",
     "updatedAt": "timestamp"
@@ -199,7 +199,7 @@ firebase use delivery-saas-7055a
   "userId123": {
     "nome": "Nome do Usuário",
     "email": "email@exemplo.com",
-    "telefone": "(11) 99999-9999",
+    "telefone": "(71) 99999-9999",
     "createdAt": "timestamp",
     "updatedAt": "timestamp",
     "isActive": true

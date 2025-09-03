@@ -32,7 +32,7 @@ const restaurants = [
     banner:
       'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800',
     address: 'Rua das Flores, 123 - Centro',
-    phone: '(11) 99999-9999',
+    phone: '(71) 99999-9999',
     email: 'contato@bellaitalia.com',
     isActive: true,
     createdAt: new Date(),
@@ -47,7 +47,7 @@ const restaurants = [
     banner:
       'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800',
     address: 'Av. Paulista, 456 - Bela Vista',
-    phone: '(11) 88888-8888',
+    phone: '(71) 88888-8888',
     email: 'contato@gourmetburger.com',
     isActive: true,
     createdAt: new Date(),

@@ -19,7 +19,7 @@
 
 - [ ] Preencher nome e email
 - [ ] Inserir telefone em formato incorreto (ex: "11999887766")
-- [ ] **Resultado Esperado**: Mensagem "Telefone deve estar no formato (11) 99999-9999"
+- [ ] **Resultado Esperado**: Mensagem "Telefone deve estar no formato (71) 99999-9999"
 
 ### ✅ **Teste 4: Validação de Senha**
 
@@ -44,7 +44,7 @@
 - [ ] Preencher todos os campos corretamente:
   - Nome: "João Silva"
   - Email: "joao@teste.com"
-  - Telefone: "(11) 99999-9999"
+  - Telefone: "(71) 99999-9999"
   - Senha: "senha123"
   - Confirmar Senha: "senha123"
 - [ ] Marcar checkbox dos termos

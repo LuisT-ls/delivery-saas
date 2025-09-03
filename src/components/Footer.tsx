@@ -54,7 +54,7 @@ export default function Footer() {
           <div className="col-md-6 text-md-end">
             <p className="text-muted mb-0">
               <i className="fas fa-heart text-danger me-1"></i>
-              Desenvolvido com Next.js e Firebase
+              Desenvolvido por Luís Teixeira
             </p>
           </div>
         </div>

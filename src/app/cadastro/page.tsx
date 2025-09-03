@@ -40,7 +40,7 @@ export default function CadastroPage() {
     if (!formData.telefone.trim()) {
       newErrors.telefone = 'Telefone é obrigatório'
     } else if (!/^\(\d{2}\) \d{5}-\d{4}$/.test(formData.telefone)) {
-      newErrors.telefone = 'Telefone deve estar no formato (11) 99999-9999'
+      newErrors.telefone = 'Telefone deve estar no formato (71) 99999-9999'
     }
 
     if (!formData.password) {
@@ -214,7 +214,7 @@ export default function CadastroPage() {
                     value={formData.telefone}
                     onChange={handleChange}
                     required
-                    placeholder="(11) 99999-9999"
+                    placeholder="(71) 99999-9999"
                     disabled={isSubmitting}
                   />
                   {errors.telefone && <div className="invalid-feedback">{errors.telefone}</div>}

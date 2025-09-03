@@ -106,7 +106,7 @@ export default function PrivacyContent() {
         <p className="text-secondary text-break">
           <strong>Email:</strong> privacidade@deliverysaas.com<br />
           <strong>Endereço:</strong> Rua das Tecnologias, 123 - São Paulo, SP<br />
-          <strong>Telefone:</strong> (11) 99999-9999
+          <strong>Telefone:</strong> (71) 99999-9999
         </p>
         <p className="text-secondary text-break">
           Última atualização: Janeiro de 2025

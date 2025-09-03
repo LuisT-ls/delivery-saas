@@ -30,7 +30,7 @@ export default function ContatoPage() {
                   <p className="card-text text-muted text-break">
                     Rua das Tecnologias, 123<br />
                     Bairro da Inovação<br />
-                    São Paulo - SP, 01234-567
+                    Salvador - BA, 41000-000
                   </p>
                 </div>
               </div>
@@ -44,8 +44,8 @@ export default function ContatoPage() {
                     Telefone
                   </h5>
                   <p className="card-text text-muted text-break">
-                    (11) 99999-9999<br />
-                    (11) 88888-8888<br />
+                    (71) 99999-9999<br />
+                    (71) 88888-8888<br />
                     Segunda a Sexta, 9h às 18h
                   </p>
                 </div>

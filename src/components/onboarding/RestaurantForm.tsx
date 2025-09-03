@@ -77,7 +77,7 @@ export default function RestaurantForm() {
     // Validar formato de telefone brasileiro
     const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
     if (!phoneRegex.test(formData.phone.trim())) {
-      setMessage({ type: 'error', text: 'Telefone deve estar no formato (11) 99999-9999' });
+      setMessage({ type: 'error', text: 'Telefone deve estar no formato (71) 99999-9999' });
       return;
     }
 
@@ -203,7 +203,7 @@ export default function RestaurantForm() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="(11) 99999-9999"
+                    placeholder="(71) 99999-9999"
                     required
                   />
                 </div>
