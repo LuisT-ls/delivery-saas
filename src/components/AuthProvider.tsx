@@ -2,12 +2,14 @@
 
 import { createContext, useContext, ReactNode } from 'react';
 import { useAuth } from '@/lib/useAuth';
+import { SignUpData } from '@/lib/types';
 
 interface AuthContextType {
   user: any;
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
   loginAnonymously: () => Promise<void>;
+  signUp: (data: SignUpData) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }

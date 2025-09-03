@@ -2,23 +2,33 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuthContext } from '@/components/AuthProvider'
+import { SignUpData, AuthError } from '@/lib/types'
 
 export default function CadastroPage() {
-  const [formData, setFormData] = useState({
+  const router = useRouter()
+  const { signUp, loading } = useAuthContext()
+
+  const [formData, setFormData] = useState<SignUpData>({
     nome: '',
     email: '',
     telefone: '',
     password: '',
     confirmPassword: ''
   })
-  const [loading, setLoading] = useState(false)
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [submitError, setSubmitError] = useState<string>('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {}
 
     if (!formData.nome.trim()) {
       newErrors.nome = 'Nome é obrigatório'
+    } else if (formData.nome.trim().length < 2) {
+      newErrors.nome = 'Nome deve ter pelo menos 2 caracteres'
     }
 
     if (!formData.email.trim()) {
@@ -29,6 +39,8 @@ export default function CadastroPage() {
 
     if (!formData.telefone.trim()) {
       newErrors.telefone = 'Telefone é obrigatório'
+    } else if (!/^\(\d{2}\) \d{5}-\d{4}$/.test(formData.telefone)) {
+      newErrors.telefone = 'Telefone deve estar no formato (11) 99999-9999'
     }
 
     if (!formData.password) {
@@ -45,38 +57,85 @@ export default function CadastroPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  const formatPhoneNumber = (value: string) => {
+    // Remove tudo que não é número
+    const numbers = value.replace(/\D/g, '')
+
+    // Aplica a máscara (XX) XXXXX-XXXX
+    if (numbers.length <= 2) {
+      return `(${numbers}`
+    } else if (numbers.length <= 7) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`
+    } else if (numbers.length <= 11) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`
+    } else {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError('')
 
     if (!validateForm()) {
       return
     }
 
-    setLoading(true)
+    setIsSubmitting(true)
 
-    // TODO: Implementar lógica de cadastro
-    console.log('Tentativa de cadastro:', formData)
+    try {
+      await signUp(formData)
 
-    // Simular delay
-    setTimeout(() => {
-      setLoading(false)
-      alert('Funcionalidade de cadastro será implementada em breve!')
-    }, 1000)
+      // Redirecionar para o menu após cadastro bem-sucedido
+      router.push('/menu')
+    } catch (error: any) {
+      if (error.userMessage) {
+        setSubmitError(error.userMessage)
+      } else {
+        setSubmitError('Ocorreu um erro inesperado. Tente novamente.')
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+    const { name, value } = e.target
 
-    // Limpar erro do campo quando o usuário começar a digitar
-    if (errors[e.target.name]) {
-      setErrors({
-        ...errors,
-        [e.target.name]: ''
+    if (name === 'telefone') {
+      const formattedValue = formatPhoneNumber(value)
+      setFormData({
+        ...formData,
+        [name]: formattedValue
+      })
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
       })
     }
+
+    // Limpar erro do campo quando o usuário começar a digitar
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ''
+      })
+    }
+
+    // Limpar erro geral quando o usuário modificar qualquer campo
+    if (submitError) {
+      setSubmitError('')
+    }
+  }
+
+  const isFormValid = () => {
+    return formData.nome.trim() &&
+      formData.email.trim() &&
+      formData.telefone.trim() &&
+      formData.password &&
+      formData.confirmPassword &&
+      formData.password === formData.confirmPassword
   }
 
   return (
@@ -90,6 +149,18 @@ export default function CadastroPage() {
                 <h2 className="card-title">Criar Conta</h2>
                 <p className="text-muted">Preencha seus dados para se cadastrar</p>
               </div>
+
+              {submitError && (
+                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+                  {submitError}
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setSubmitError('')}
+                  ></button>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit}>
                 <div className="row">
@@ -107,6 +178,7 @@ export default function CadastroPage() {
                       onChange={handleChange}
                       required
                       placeholder="Seu nome completo"
+                      disabled={isSubmitting}
                     />
                     {errors.nome && <div className="invalid-feedback">{errors.nome}</div>}
                   </div>
@@ -125,6 +197,7 @@ export default function CadastroPage() {
                       onChange={handleChange}
                       required
                       placeholder="seu@email.com"
+                      disabled={isSubmitting}
                     />
                     {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                   </div>
@@ -143,6 +216,7 @@ export default function CadastroPage() {
                       onChange={handleChange}
                       required
                       placeholder="(11) 99999-9999"
+                      disabled={isSubmitting}
                     />
                     {errors.telefone && <div className="invalid-feedback">{errors.telefone}</div>}
                   </div>
@@ -161,6 +235,7 @@ export default function CadastroPage() {
                       onChange={handleChange}
                       required
                       placeholder="Mínimo 6 caracteres"
+                      disabled={isSubmitting}
                     />
                     {errors.password && <div className="invalid-feedback">{errors.password}</div>}
                   </div>
@@ -179,6 +254,7 @@ export default function CadastroPage() {
                       onChange={handleChange}
                       required
                       placeholder="Confirme sua senha"
+                      disabled={isSubmitting}
                     />
                     {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
                   </div>
@@ -190,6 +266,7 @@ export default function CadastroPage() {
                     className="form-check-input"
                     id="terms"
                     required
+                    disabled={isSubmitting}
                   />
                   <label className="form-check-label" htmlFor="terms">
                     Concordo com os <Link href="/termos" className="text-decoration-none">Termos de Uso</Link> e <Link href="/privacidade" className="text-decoration-none">Política de Privacidade</Link>
@@ -199,9 +276,9 @@ export default function CadastroPage() {
                 <button
                   type="submit"
                   className="btn btn-primary w-100 mb-3"
-                  disabled={loading}
+                  disabled={isSubmitting || !isFormValid()}
                 >
-                  {loading ? (
+                  {isSubmitting ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                       Criando conta...
@@ -224,14 +301,18 @@ export default function CadastroPage() {
               <hr className="my-4" />
 
               <div className="text-center">
-                <button className="btn btn-outline-primary w-100 mb-2">
+                <button className="btn btn-outline-primary w-100 mb-2" disabled>
                   <i className="fab fa-google me-2"></i>
                   Cadastrar com Google
                 </button>
-                <button className="btn btn-outline-dark w-100">
+                <button className="btn btn-outline-dark w-100" disabled>
                   <i className="fab fa-facebook me-2"></i>
                   Cadastrar com Facebook
                 </button>
+                <small className="text-muted d-block mt-2">
+                  <i className="fas fa-info-circle me-1"></i>
+                  Login social será implementado em breve
+                </small>
               </div>
             </div>
           </div>

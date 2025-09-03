@@ -149,3 +149,4 @@ Os logs importantes são exibidos no console do navegador:
 - Erros de Firestore
 - Operações de CRUD
 - Estados de loading
+

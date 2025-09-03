@@ -97,3 +97,28 @@ export interface Order {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Tipos para usuários e autenticação
+export interface UserProfile {
+  uid: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
+}
+
+export interface AuthError {
+  code: string;
+  message: string;
+  userMessage: string;
+}
+
+export interface SignUpData {
+  nome: string;
+  email: string;
+  telefone: string;
+  password: string;
+  confirmPassword: string;
+}

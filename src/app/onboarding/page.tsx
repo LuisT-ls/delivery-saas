@@ -77,3 +77,4 @@ export default function OnboardingPage() {
 
   return <RestaurantForm />;
 }
+

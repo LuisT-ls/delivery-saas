@@ -5,9 +5,18 @@ import {
   signOut,
   onAuthStateChanged,
   User,
-  UserCredential
+  UserCredential,
+  createUserWithEmailAndPassword
 } from 'firebase/auth';
-import { auth } from './firebase';
+import { 
+  doc, 
+  setDoc, 
+  getDoc, 
+  serverTimestamp 
+} from 'firebase/firestore';
+import { auth, db } from './firebase';
+import { UserProfile, SignUpData, AuthError } from './types';
+import { secureLog, sanitizeForLogging } from './utils';
 
 // Provider para login com Google
 const googleProvider = new GoogleAuthProvider();
@@ -39,6 +48,73 @@ export const signInAnonymouslyUser = async (): Promise<UserCredential> => {
   } catch (error) {
     console.error('Erro no login anônimo:', error);
     throw error;
+  }
+};
+
+/**
+ * Cadastro com email e senha
+ */
+export const signUpWithEmail = async (data: SignUpData): Promise<UserCredential> => {
+  try {
+    const { email, password } = data;
+    
+    // Log seguro para debugging (sem dados sensíveis)
+    secureLog('Tentativa de cadastro iniciada', sanitizeForLogging(data), ['password', 'email', 'telefone']);
+    
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Criar perfil do usuário no Firestore
+    await createUserProfile(userCredential.user.uid, {
+      nome: data.nome,
+      email: data.email,
+      telefone: data.telefone
+    });
+    
+    secureLog('Cadastro realizado com sucesso', { uid: userCredential.user.uid });
+    
+    return userCredential;
+  } catch (error: any) {
+    const authError = mapFirebaseAuthError(error);
+    secureLog('Erro no cadastro', { code: authError.code, message: authError.message });
+    throw authError;
+  }
+};
+
+/**
+ * Criar perfil do usuário no Firestore
+ */
+export const createUserProfile = async (uid: string, profileData: Partial<UserProfile>): Promise<void> => {
+  try {
+    const userProfile: Omit<UserProfile, 'uid'> = {
+      nome: profileData.nome!,
+      email: profileData.email!,
+      telefone: profileData.telefone!,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isActive: true
+    };
+
+    await setDoc(doc(db, 'users', uid), userProfile);
+    secureLog('Perfil do usuário criado no Firestore', { uid });
+  } catch (error) {
+    secureLog('Erro ao criar perfil do usuário', { uid, error: error instanceof Error ? error.message : 'Erro desconhecido' });
+    throw new Error('Falha ao criar perfil do usuário');
+  }
+};
+
+/**
+ * Obter perfil do usuário do Firestore
+ */
+export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    if (userDoc.exists()) {
+      return { uid, ...userDoc.data() } as UserProfile;
+    }
+    return null;
+  } catch (error) {
+    secureLog('Erro ao obter perfil do usuário', { uid, error: error instanceof Error ? error.message : 'Erro desconhecido' });
+    return null;
   }
 };
 
@@ -89,4 +165,49 @@ export const isGoogleUser = (): boolean => {
   return auth.currentUser?.providerData.some(
     provider => provider.providerId === 'google.com'
   ) || false;
+};
+
+/**
+ * Mapear erros do Firebase Auth para mensagens amigáveis
+ */
+export const mapFirebaseAuthError = (error: any): AuthError => {
+  let userMessage = 'Ocorreu um erro inesperado. Tente novamente.';
+  
+  switch (error.code) {
+    case 'auth/email-already-in-use':
+      userMessage = 'Este email já está sendo usado por outra conta.';
+      break;
+    case 'auth/invalid-email':
+      userMessage = 'Email inválido. Verifique o formato.';
+      break;
+    case 'auth/operation-not-allowed':
+      userMessage = 'Cadastro com email e senha não está habilitado.';
+      break;
+    case 'auth/weak-password':
+      userMessage = 'A senha é muito fraca. Use pelo menos 6 caracteres.';
+      break;
+    case 'auth/network-request-failed':
+      userMessage = 'Erro de conexão. Verifique sua internet.';
+      break;
+    case 'auth/too-many-requests':
+      userMessage = 'Muitas tentativas. Tente novamente em alguns minutos.';
+      break;
+    case 'auth/user-disabled':
+      userMessage = 'Esta conta foi desabilitada.';
+      break;
+    case 'auth/user-not-found':
+      userMessage = 'Usuário não encontrado.';
+      break;
+    case 'auth/wrong-password':
+      userMessage = 'Senha incorreta.';
+      break;
+    default:
+      userMessage = 'Ocorreu um erro inesperado. Tente novamente.';
+  }
+
+  return {
+    code: error.code || 'unknown',
+    message: error.message || 'Erro desconhecido',
+    userMessage
+  };
 };

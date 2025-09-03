@@ -7,8 +7,10 @@ import {
   signInAnonymouslyUser, 
   signOutUser, 
   onAuthStateChange,
-  getCurrentUser 
+  getCurrentUser,
+  signUpWithEmail
 } from './auth';
+import { SignUpData, AuthError } from './types';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -47,6 +49,18 @@ export function useAuth() {
     }
   };
 
+  const signUp = async (data: SignUpData): Promise<void> => {
+    try {
+      setLoading(true);
+      await signUpWithEmail(data);
+    } catch (error) {
+      console.error('Erro no cadastro:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       setLoading(true);
@@ -64,6 +78,7 @@ export function useAuth() {
     loading,
     loginWithGoogle,
     loginAnonymously,
+    signUp,
     logout,
     isAuthenticated: !!user
   };
