@@ -87,7 +87,7 @@ export default function SobrePage() {
                 <small className="text-muted">Framework React</small>
               </div>
               <div className="col-md-3 mb-3">
-                <i className="fab fa-firebase fa-2x text-warning mb-2"></i>
+                <i className="fas fa-fire fa-2x text-warning mb-2"></i>
                 <h6 className="text-dark">Firebase</h6>
                 <small className="text-muted">Backend & Database</small>
               </div>
@@ -97,7 +97,7 @@ export default function SobrePage() {
                 <small className="text-muted">UI Framework</small>
               </div>
               <div className="col-md-3 mb-3">
-                <i className="fab fa-typescript fa-2x text-info mb-2"></i>
+                <i className="fas fa-code fa-2x text-info mb-2"></i>
                 <h6 className="text-dark">TypeScript</h6>
                 <small className="text-muted">Linguagem</small>
               </div>
