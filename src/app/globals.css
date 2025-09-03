@@ -226,3 +226,68 @@ body {
 .order-card .card.border-danger {
   animation: urgentPulse 2s infinite;
 }
+
+/* Legal pages styles */
+.legal-content h2 {
+  color: #495057;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.legal-content h2 i {
+  color: #007bff;
+}
+
+.legal-content p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.legal-content ul {
+  padding-left: 1.5rem;
+}
+
+.legal-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* Contact form styles */
+.contact-form .form-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.contact-form .form-control {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.contact-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.contact-form .form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.contact-form .btn-primary {
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.contact-form .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Footer link hover effects */
+.footer a:hover {
+  color: #007bff !important;
+  text-decoration: underline !important;
+  transition: color 0.3s ease;
+}
