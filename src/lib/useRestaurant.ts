@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 import { Restaurant, RestaurantFormData } from '@/types/restaurant';
+import { secureLog } from './utils';
 
 export function useRestaurant(userId: string | undefined) {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -22,8 +23,10 @@ export function useRestaurant(userId: string | undefined) {
       if (restaurantDoc.exists()) {
         const data = restaurantDoc.data() as Restaurant;
         setRestaurant({ ...data, id: restaurantDoc.id });
+        secureLog('Restaurante carregado com sucesso', { id: restaurantDoc.id });
       } else {
         setRestaurant(null);
+        secureLog('Nenhum restaurante encontrado para o usuário', { userId });
       }
     } catch (err) {
       console.error('Erro ao carregar restaurante:', err);
@@ -45,21 +48,42 @@ export function useRestaurant(userId: string | undefined) {
 
     try {
       const restaurantRef = doc(db, 'restaurants', userId);
+      
+      // Garantir que todos os campos obrigatórios estejam presentes
       const restaurantData: Omit<Restaurant, 'id'> = {
-        ...formData,
+        name: formData.name.trim(),
+        address: formData.address.trim(),
+        phone: formData.phone.trim(),
         ownerId: userId,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       };
 
+      secureLog('Tentativa de criação de restaurante', { 
+        userId, 
+        name: restaurantData.name,
+        address: restaurantData.address,
+        phone: restaurantData.phone
+      });
+
       await setDoc(restaurantRef, restaurantData);
       
       // Atualizar estado local
       setRestaurant({ ...restaurantData, id: userId });
+      secureLog('Restaurante criado com sucesso', { id: userId });
       return true;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao criar restaurante:', err);
-      setError('Erro ao criar restaurante');
+      
+      // Tratamento específico de erros do Firestore
+      if (err.code === 'permission-denied') {
+        setError('Permissão negada. Verifique se você está logado e tente novamente.');
+      } else if (err.code === 'unavailable') {
+        setError('Serviço temporariamente indisponível. Tente novamente em alguns minutos.');
+      } else {
+        setError(`Erro ao criar restaurante: ${err.message || 'Erro desconhecido'}`);
+      }
+      
       return false;
     } finally {
       setLoading(false);
@@ -78,17 +102,37 @@ export function useRestaurant(userId: string | undefined) {
 
     try {
       const restaurantRef = doc(db, 'restaurants', userId);
-      await updateDoc(restaurantRef, {
-        ...formData,
+      
+      const updateData = {
+        name: formData.name.trim(),
+        address: formData.address.trim(),
+        phone: formData.phone.trim(),
         updatedAt: serverTimestamp()
+      };
+
+      secureLog('Tentativa de atualização de restaurante', { 
+        id: userId, 
+        updates: updateData 
       });
 
+      await updateDoc(restaurantRef, updateData);
+
       // Atualizar estado local
-      setRestaurant(prev => prev ? { ...prev, ...formData } : null);
+      setRestaurant(prev => prev ? { ...prev, ...updateData } : null);
+      secureLog('Restaurante atualizado com sucesso', { id: userId });
       return true;
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao atualizar restaurante:', err);
-      setError('Erro ao atualizar restaurante');
+      
+      // Tratamento específico de erros do Firestore
+      if (err.code === 'permission-denied') {
+        setError('Permissão negada. Verifique se você está logado e tente novamente.');
+      } else if (err.code === 'unavailable') {
+        setError('Serviço temporariamente indisponível. Tente novamente em alguns minutos.');
+      } else {
+        setError(`Erro ao atualizar restaurante: ${err.message || 'Erro desconhecido'}`);
+      }
+      
       return false;
     } finally {
       setLoading(false);

@@ -44,12 +44,40 @@ export default function RestaurantForm() {
     e.preventDefault();
 
     if (!user?.uid) {
-      setMessage({ type: 'error', text: 'Usuário não autenticado' });
+      setMessage({ type: 'error', text: 'Usuário não autenticado. Faça login novamente.' });
       return;
     }
 
-    if (!formData.name.trim() || !formData.address.trim() || !formData.phone.trim()) {
-      setMessage({ type: 'error', text: 'Todos os campos são obrigatórios' });
+    // Validação mais robusta
+    if (!formData.name.trim()) {
+      setMessage({ type: 'error', text: 'Nome do restaurante é obrigatório' });
+      return;
+    }
+
+    if (formData.name.trim().length < 3) {
+      setMessage({ type: 'error', text: 'Nome do restaurante deve ter pelo menos 3 caracteres' });
+      return;
+    }
+
+    if (!formData.address.trim()) {
+      setMessage({ type: 'error', text: 'Endereço é obrigatório' });
+      return;
+    }
+
+    if (formData.address.trim().length < 10) {
+      setMessage({ type: 'error', text: 'Endereço deve ter pelo menos 10 caracteres' });
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      setMessage({ type: 'error', text: 'Telefone é obrigatório' });
+      return;
+    }
+
+    // Validar formato de telefone brasileiro
+    const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+    if (!phoneRegex.test(formData.phone.trim())) {
+      setMessage({ type: 'error', text: 'Telefone deve estar no formato (11) 99999-9999' });
       return;
     }
 
@@ -78,17 +106,30 @@ export default function RestaurantForm() {
           router.push('/admin');
         }, 2000);
       } else {
+        // Usar o erro específico do hook useRestaurant
         setMessage({
           type: 'error',
           text: error || 'Erro ao salvar restaurante. Tente novamente.'
         });
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao salvar restaurante:', error);
+
+      // Tratamento específico de erros
+      let errorMessage = 'Erro ao salvar restaurante. Tente novamente.';
+
+      if (error?.code === 'permission-denied') {
+        errorMessage = 'Permissão negada. Verifique se você está logado e tente novamente.';
+      } else if (error?.code === 'unavailable') {
+        errorMessage = 'Serviço temporariamente indisponível. Tente novamente em alguns minutos.';
+      } else if (error?.message) {
+        errorMessage = `Erro: ${error.message}`;
+      }
+
       setMessage({
         type: 'error',
-        text: 'Erro ao salvar restaurante. Tente novamente.'
+        text: errorMessage
       });
     }
   };

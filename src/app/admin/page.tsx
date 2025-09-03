@@ -13,11 +13,12 @@ import StatsCard from '@/components/admin/StatsCard';
 import { useOrdersRealtime, useNewOrderAlert } from '@/lib/admin-hooks';
 import { usePushNotifications } from '@/lib/use-push-notifications';
 import { pushNotificationService } from '@/lib/push-notifications';
+import { useAdminAccess } from '@/lib/useAdminAccess';
+import { useAuthContext } from '@/components/AuthProvider';
 
 export default function AdminPage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [restaurantId, setRestaurantId] = useState<string | null>(null);
+  const { user, isAuthenticated } = useAuthContext();
+  const { hasAccess, restaurantId, restaurant, loading: adminLoading, error: adminError } = useAdminAccess();
   const router = useRouter();
 
   const { orders, loading: ordersLoading, error } = useOrdersRealtime(restaurantId);
@@ -29,24 +30,12 @@ export default function AdminPage() {
     removeToken
   } = usePushNotifications();
 
+  // Configurar notificações push quando o usuário tiver acesso
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
-      setUser(user);
-      setLoading(false);
-
-      if (user && isGoogleUser()) {
-        // Para demo, vamos usar um restaurantId fixo
-        // Em produção, isso viria do perfil do usuário ou configuração
-        const demoRestaurantId = 'demo-restaurant-1';
-        setRestaurantId(demoRestaurantId);
-
-        // Configurar notificações push
-        setupPushNotifications(demoRestaurantId, user.uid, user.email || '');
-      }
-    });
-
-    return () => unsubscribe();
-  }, [setupNotifications]);
+    if (hasAccess && restaurantId && user) {
+      setupPushNotifications(restaurantId, user.uid, user.email || '');
+    }
+  }, [hasAccess, restaurantId, user, setupNotifications]);
 
   const setupPushNotifications = async (restaurantId: string, userId: string, userEmail: string) => {
     if (!isSupported) {
@@ -86,7 +75,7 @@ export default function AdminPage() {
         await removeToken(restaurantId);
       }
       await signOutUser();
-      setRestaurantId(null);
+      router.push('/');
     } catch (error) {
       console.error('Erro no logout:', error);
     }
@@ -132,14 +121,23 @@ export default function AdminPage() {
     }
   };
 
-  if (loading || ordersLoading) {
+  // Mostrar loading enquanto verifica acesso administrativo
+  if (adminLoading || ordersLoading) {
     return <LoadingScreen />;
   }
 
-  if (!user || !isGoogleUser()) {
-    return <LoginScreen onLogin={handleLogin} />;
+  // Se não tem acesso administrativo, mostrar tela de login/erro
+  if (!hasAccess) {
+    return (
+      <LoginScreen
+        onLogin={handleLogin}
+        error={adminError}
+        isAuthenticated={isAuthenticated}
+      />
+    );
   }
 
+  // Usuário tem acesso administrativo - mostrar dashboard
   return (
     <div className="admin-dashboard">
       <NotificationSound play={newOrderAlert} />
@@ -149,7 +147,7 @@ export default function AdminPage() {
           <div className="d-flex justify-content-between align-items-center">
             <h1 className="mb-0">
               <i className="fas fa-utensils me-2"></i>
-              Painel do Restaurante
+              Painel do Restaurante: {restaurant?.name || 'Meu Restaurante'}
             </h1>
             <div className="d-flex align-items-center">
               <div className="me-4">
@@ -171,7 +169,7 @@ export default function AdminPage() {
               <span className="me-3">
                 <span className="status-indicator status-online"></span>
                 <i className="fas fa-user me-1"></i>
-                {user.email}
+                {user?.email}
               </span>
               <button
                 className={`btn ${getNotificationButtonClass()} me-2`}
