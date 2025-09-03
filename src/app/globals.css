@@ -33,6 +33,98 @@ body {
   border-top: 1px solid #dee2e6;
 }
 
+/* Responsive Typography Classes */
+.h2-responsive {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.h3-responsive {
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+}
+
+.h5-responsive {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+}
+
+/* Responsive Display Classes */
+.display-md-3 {
+  font-size: clamp(2rem, 5vw, 2.5rem);
+}
+
+.display-lg-4 {
+  font-size: clamp(2.5rem, 6vw, 3rem);
+}
+
+/* Responsive Icon Sizes */
+.fa-md-3x {
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+}
+
+/* Hero Section Responsive */
+.hero-icon {
+  transition: transform 0.3s ease;
+}
+
+.hero-icon:hover {
+  transform: scale(1.05);
+}
+
+/* Feature Cards Responsive */
+.feature-card {
+  transition: all 0.3s ease;
+  min-height: 200px;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Responsive Spacing Utilities */
+@media (max-width: 767.98px) {
+  .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .hero-icon {
+    margin-bottom: 1rem;
+  }
+
+  .feature-card .card-body {
+    padding: 1.5rem !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .container-fluid {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  .display-4 {
+    font-size: 1.75rem !important;
+  }
+
+  .lead {
+    font-size: 1rem !important;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+/* Responsive button behavior */
+@media (max-width: 575.98px) {
+  .btn {
+    white-space: normal;
+    height: auto;
+    min-height: 44px; /* Touch-friendly minimum height */
+  }
+}
+
 /* Product card styles */
 .product-card {
   transition: transform 0.2s;
@@ -292,98 +384,6 @@ body {
   transition: color 0.3s ease;
 }
 
-/* Responsive Typography Classes */
-.h2-responsive {
-  font-size: clamp(1.5rem, 4vw, 2rem);
-}
-
-.h3-responsive {
-  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
-}
-
-.h5-responsive {
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-}
-
-/* Responsive Display Classes */
-.display-md-3 {
-  font-size: clamp(2rem, 5vw, 2.5rem);
-}
-
-.display-lg-4 {
-  font-size: clamp(2.5rem, 6vw, 3rem);
-}
-
-/* Responsive Icon Sizes */
-.fa-md-3x {
-  font-size: clamp(2rem, 4vw, 3rem) !important;
-}
-
-/* Hero Section Responsive */
-.hero-icon {
-  transition: transform 0.3s ease;
-}
-
-.hero-icon:hover {
-  transform: scale(1.05);
-}
-
-/* Feature Cards Responsive */
-.feature-card {
-  transition: all 0.3s ease;
-  min-height: 200px;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Responsive Spacing Utilities */
-@media (max-width: 767.98px) {
-  .container-fluid {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-
-  .hero-icon {
-    margin-bottom: 1rem;
-  }
-
-  .feature-card .card-body {
-    padding: 1.5rem !important;
-  }
-}
-
-@media (max-width: 575.98px) {
-  .container-fluid {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-  }
-
-  .display-4 {
-    font-size: 1.75rem !important;
-  }
-
-  .lead {
-    font-size: 1rem !important;
-  }
-
-  .btn-lg {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-  }
-}
-
-/* Responsive button behavior */
-@media (max-width: 575.98px) {
-  .btn {
-    white-space: normal;
-    height: auto;
-    min-height: 44px; /* Touch-friendly minimum height */
-  }
-}
-
 /* Responsive Legal Content Styles */
 .legal-card {
   max-width: 100%;
@@ -482,4 +482,152 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
   hyphens: auto;
+}
+
+/* Responsive Contact Page Styles */
+.contact-info-card {
+  transition: all 0.3s ease;
+  min-height: 200px;
+}
+
+.contact-info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.contact-form-card {
+  transition: all 0.3s ease;
+}
+
+.contact-form-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.contact-social-link {
+  transition: all 0.3s ease;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.contact-social-link:hover {
+  color: #007bff !important;
+  background-color: rgba(0, 123, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Responsive Contact Form Styles */
+.contact-form .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+}
+
+.contact-form .form-control {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.contact-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.contact-form .form-control.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.contact-form .form-control-lg {
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+}
+
+.contact-form .btn-primary {
+  border-radius: 8px;
+  padding: 0.875rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-height: 48px;
+}
+
+.contact-form .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.contact-form .form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-top: 0.5rem;
+}
+
+.contact-form .invalid-feedback {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive spacing for contact page */
+@media (max-width: 767.98px) {
+  .contact-info-card {
+    min-height: 180px;
+    margin-bottom: 1rem;
+  }
+
+  .contact-form .form-control-lg {
+    padding: 0.75rem 0.875rem;
+    font-size: 1rem;
+  }
+
+  .contact-form .btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .contact-social-link {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .contact-info-card {
+    min-height: 160px;
+  }
+
+  .contact-form .form-control-lg {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .contact-form .btn-primary {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    min-height: 44px;
+  }
+
+  .contact-form .form-label {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-form .form-text {
+    font-size: 0.8rem;
+  }
+
+  .contact-social-link {
+    padding: 0.5rem;
+  }
+
+  .contact-social-link i {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* H4 responsive class for contact form header */
+.h4-responsive {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
 }

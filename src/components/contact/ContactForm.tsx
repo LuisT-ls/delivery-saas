@@ -80,12 +80,12 @@ export default function ContactForm() {
         <div className="mb-4">
           <i className="fas fa-check-circle fa-4x text-success"></i>
         </div>
-        <h3 className="text-success mb-3">Mensagem Enviada com Sucesso!</h3>
-        <p className="text-secondary mb-4">
+        <h3 className="text-success mb-3 h3-responsive">Mensagem Enviada com Sucesso!</h3>
+        <p className="text-secondary mb-4 text-break">
           Obrigado pelo seu contato. Retornaremos em breve!
         </p>
         <button
-          className="btn btn-primary"
+          className="btn btn-primary btn-lg w-100 w-sm-auto"
           onClick={() => setIsSubmitted(false)}
         >
           <i className="fas fa-plus me-2"></i>
@@ -97,68 +97,89 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="contact-form">
-      <div className="mb-4">
-        <label htmlFor="nome" className="form-label">
-          <i className="fas fa-user me-2 text-primary"></i>
-          Nome Completo *
-        </label>
-        <input
-          type="text"
-          className={`form-control ${errors.nome ? 'is-invalid' : ''}`}
-          id="nome"
-          name="nome"
-          value={formData.nome}
-          onChange={handleChange}
-          placeholder="Digite seu nome completo"
-        />
-        {errors.nome && (
-          <div className="invalid-feedback">{errors.nome}</div>
-        )}
+      {/* Nome e Email em linha no desktop, empilhados no mobile */}
+      <div className="row g-3 g-md-4 mb-4">
+        <div className="col-12 col-md-6">
+          <label htmlFor="nome" className="form-label fw-semibold">
+            <i className="fas fa-user me-2 text-primary"></i>
+            Nome Completo *
+          </label>
+          <input
+            type="text"
+            className={`form-control form-control-lg ${errors.nome ? 'is-invalid' : ''}`}
+            id="nome"
+            name="nome"
+            value={formData.nome}
+            onChange={handleChange}
+            placeholder="Digite seu nome completo"
+            aria-describedby="nomeHelp"
+            required
+          />
+          {errors.nome && (
+            <div className="invalid-feedback" id="nomeError">{errors.nome}</div>
+          )}
+          <div id="nomeHelp" className="form-text">
+            Digite seu nome completo como aparece em documentos
+          </div>
+        </div>
+
+        <div className="col-12 col-md-6">
+          <label htmlFor="email" className="form-label fw-semibold">
+            <i className="fas fa-envelope me-2 text-primary"></i>
+            Email *
+          </label>
+          <input
+            type="email"
+            className={`form-control form-control-lg ${errors.email ? 'is-invalid' : ''}`}
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Digite seu email"
+            aria-describedby="emailHelp"
+            required
+          />
+          {errors.email && (
+            <div className="invalid-feedback" id="emailError">{errors.email}</div>
+          )}
+          <div id="emailHelp" className="form-text">
+            Usaremos este email para retornar o contato
+          </div>
+        </div>
       </div>
 
+      {/* Mensagem sempre em largura total */}
       <div className="mb-4">
-        <label htmlFor="email" className="form-label">
-          <i className="fas fa-envelope me-2 text-primary"></i>
-          Email *
-        </label>
-        <input
-          type="email"
-          className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Digite seu email"
-        />
-        {errors.email && (
-          <div className="invalid-feedback">{errors.email}</div>
-        )}
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="mensagem" className="form-label">
+        <label htmlFor="mensagem" className="form-label fw-semibold">
           <i className="fas fa-comment me-2 text-primary"></i>
           Mensagem *
         </label>
         <textarea
-          className={`form-control ${errors.mensagem ? 'is-invalid' : ''}`}
+          className={`form-control form-control-lg ${errors.mensagem ? 'is-invalid' : ''}`}
           id="mensagem"
           name="mensagem"
           rows={5}
           value={formData.mensagem}
           onChange={handleChange}
           placeholder="Digite sua mensagem (mínimo 10 caracteres)"
+          aria-describedby="mensagemHelp"
+          required
         />
         {errors.mensagem && (
-          <div className="invalid-feedback">{errors.mensagem}</div>
+          <div className="invalid-feedback" id="mensagemError">{errors.mensagem}</div>
         )}
+        <div id="mensagemHelp" className="form-text">
+          Descreva detalhadamente sua dúvida ou sugestão
+        </div>
       </div>
 
-      <div className="d-grid">
+      {/* Botão responsivo */}
+      <div className="d-flex flex-column flex-sm-row justify-content-end gap-3">
         <button
           type="submit"
-          className="btn btn-primary btn-lg"
+          className="btn btn-primary btn-lg w-100 w-sm-auto"
           disabled={isSubmitting}
+          aria-describedby="submitHelp"
         >
           {isSubmitting ? (
             <>
@@ -172,12 +193,9 @@ export default function ContactForm() {
             </>
           )}
         </button>
-      </div>
-
-      <div className="mt-3 text-center">
-        <small className="text-muted">
+        <div id="submitHelp" className="form-text text-center text-sm-start">
           * Campos obrigatórios
-        </small>
+        </div>
       </div>
     </form>
   )
