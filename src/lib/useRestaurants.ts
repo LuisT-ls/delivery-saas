@@ -34,8 +34,9 @@ export function useRestaurants() {
 
     try {
       const restaurantsRef = collection(db, 'restaurants');
-      const q = query(restaurantsRef, orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
+      // Usar apenas getDocs sem orderBy para evitar necessidade de índice
+      // A ordenação será feita no cliente
+      const querySnapshot = await getDocs(restaurantsRef);
       
       const restaurantsList: Restaurant[] = [];
       querySnapshot.forEach((doc) => {
@@ -55,13 +56,30 @@ export function useRestaurants() {
         restaurantsList.push(restaurantData);
       });
       
+      // Ordenar por data de criação (mais recente primeiro)
+      restaurantsList.sort((a, b) => {
+        const dateA = a.createdAt?.toDate?.() || new Date(0);
+        const dateB = b.createdAt?.toDate?.() || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      });
+      
       setRestaurants(restaurantsList);
       secureLog('Restaurantes carregados com sucesso', { 
         count: restaurantsList.length 
       });
     } catch (err: any) {
       console.error('Erro ao carregar restaurantes:', err);
-      setError(`Erro ao carregar restaurantes: ${err.message || 'Erro desconhecido'}`);
+      
+      // Tratamento específico para diferentes tipos de erro
+      if (err.code === 'failed-precondition') {
+        setError('Erro de configuração do banco de dados. Recarregue a página.');
+      } else if (err.code === 'permission-denied') {
+        setError('Sem permissão para acessar os restaurantes.');
+      } else if (err.code === 'unavailable') {
+        setError('Serviço temporariamente indisponível. Tente novamente.');
+      } else {
+        setError(`Erro ao carregar restaurantes: ${err.message || 'Erro desconhecido'}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -80,10 +98,11 @@ export function useRestaurants() {
 
     try {
       const restaurantsRef = collection(db, 'restaurants');
+      // Usar apenas where para evitar necessidade de índice composto
+      // A ordenação será feita no cliente
       const q = query(
         restaurantsRef, 
-        where('category', '==', category),
-        orderBy('createdAt', 'desc')
+        where('category', '==', category)
       );
       const querySnapshot = await getDocs(q);
       
@@ -105,6 +124,13 @@ export function useRestaurants() {
         restaurantsList.push(restaurantData);
       });
       
+      // Ordenar por data de criação (mais recente primeiro)
+      restaurantsList.sort((a, b) => {
+        const dateA = a.createdAt?.toDate?.() || new Date(0);
+        const dateB = b.createdAt?.toDate?.() || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      });
+      
       setRestaurants(restaurantsList);
       secureLog('Restaurantes por categoria carregados com sucesso', { 
         category,
@@ -112,7 +138,17 @@ export function useRestaurants() {
       });
     } catch (err: any) {
       console.error('Erro ao carregar restaurantes por categoria:', err);
-      setError(`Erro ao carregar restaurantes por categoria: ${err.message || 'Erro desconhecido'}`);
+      
+      // Tratamento específico para diferentes tipos de erro
+      if (err.code === 'failed-precondition') {
+        setError('Erro de configuração do banco de dados. Recarregue a página.');
+      } else if (err.code === 'permission-denied') {
+        setError('Sem permissão para acessar os restaurantes.');
+      } else if (err.code === 'unavailable') {
+        setError('Serviço temporariamente indisponível. Tente novamente.');
+      } else {
+        setError(`Erro ao carregar restaurantes por categoria: ${err.message || 'Erro desconhecido'}`);
+      }
     } finally {
       setLoading(false);
     }

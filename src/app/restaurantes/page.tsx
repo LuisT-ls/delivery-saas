@@ -49,6 +49,13 @@ export default function RestaurantesPage() {
     }
   }, [filtroCategoria, hasLoadFunctions])
 
+  // Carregar restaurantes na inicialização
+  useEffect(() => {
+    if (hasLoadFunctions && restaurants.length === 0 && !loading) {
+      loadRestaurants()
+    }
+  }, [hasLoadFunctions, restaurants.length, loading, loadRestaurants])
+
   if (loading) {
     return (
       <div className="container py-5">
@@ -90,7 +97,8 @@ export default function RestaurantesPage() {
     )
   }
 
-  if (!hasLoadFunctions) {
+  // Só usar fallback se não há funções E não há dados E não está carregando
+  if (!hasLoadFunctions && restaurants.length === 0 && !loading) {
     console.warn('Funções de carregamento não disponíveis, usando fallback');
     return <RestaurantsFallback />;
   }
@@ -152,12 +160,12 @@ export default function RestaurantesPage() {
                 <div className="card h-100 border-0 shadow-sm hover-shadow">
                   <div className="position-relative">
                     {restaurante.image ? (
-                    <img
+                      <img
                         src={restaurante.image}
-                      className="card-img-top"
+                        className="card-img-top"
                         alt={restaurante.name}
-                      style={{ height: '200px', objectFit: 'cover' }}
-                    />
+                        style={{ height: '200px', objectFit: 'cover' }}
+                      />
                     ) : (
                       <div
                         className="card-img-top d-flex align-items-center justify-content-center bg-light"
@@ -220,11 +228,29 @@ export default function RestaurantesPage() {
 
           {restaurantesFiltrados.length === 0 && (
             <div className="text-center py-5">
-              <i className="fas fa-search fa-3x text-muted mb-3"></i>
-              <h4>Nenhum restaurante encontrado</h4>
-              <p className="text-muted">
-                Tente ajustar os filtros para encontrar restaurantes disponíveis.
-              </p>
+              {restaurants.length === 0 ? (
+                <>
+                  <i className="fas fa-store fa-3x text-muted mb-3"></i>
+                  <h4>Nenhum restaurante cadastrado</h4>
+                  <p className="text-muted">
+                    Ainda não há restaurantes cadastrados no sistema.
+                  </p>
+                  <div className="mt-4">
+                    <small className="text-muted">
+                      <i className="fas fa-info-circle me-1"></i>
+                      Restaurantes aparecerão aqui automaticamente quando forem cadastrados.
+                    </small>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-search fa-3x text-muted mb-3"></i>
+                  <h4>Nenhum restaurante encontrado</h4>
+                  <p className="text-muted">
+                    Tente ajustar os filtros para encontrar restaurantes disponíveis.
+                  </p>
+                </>
+              )}
             </div>
           )}
 
