@@ -1,6 +1,7 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
 
 const firebaseConfig = {
@@ -19,6 +20,7 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 // Initialize Firebase services
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 // Initialize Firebase Cloud Messaging
 export const getMessagingInstance = async () => {
@@ -28,13 +30,5 @@ export const getMessagingInstance = async () => {
   return null;
 };
 
-// Storage será inicializado apenas quando necessário (lado do servidor)
-export const getStorage = async () => {
-  if (typeof window === 'undefined') {
-    const { getStorage } = await import('firebase/storage');
-    return getStorage(app);
-  }
-  return null;
-};
 
 export default app;

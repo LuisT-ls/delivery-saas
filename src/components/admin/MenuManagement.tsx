@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useMenuItems, MenuItemFormData } from '@/lib/useMenuItems';
+import { useImageUpload } from '@/lib/useImageUpload';
 import { MenuItem } from '@/types/restaurant';
 
 interface MenuManagementProps {
@@ -28,6 +29,11 @@ export default function MenuManagement({ restaurantId }: MenuManagementProps) {
     image: ''
   });
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { uploading: imageUploading, error: imageError, uploadMenuItemImage } = useImageUpload();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,6 +48,29 @@ export default function MenuManagement({ restaurantId }: MenuManagementProps) {
         ...prev,
         [name]: value
       }));
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+
+      // Criar preview da imagem
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setFormData(prev => ({ ...prev, image: '' }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -67,18 +96,36 @@ export default function MenuManagement({ restaurantId }: MenuManagementProps) {
     setMessage(null);
 
     try {
+      let imageUrl = formData.image;
+
+      // Fazer upload da imagem se um arquivo foi selecionado
+      if (selectedFile) {
+        const menuItemId = editingItem?.id || `temp-${Date.now()}`;
+        const uploadResult = await uploadMenuItemImage(selectedFile, restaurantId, menuItemId);
+
+        if (uploadResult) {
+          imageUrl = uploadResult.url;
+        } else {
+          setMessage({ type: 'error', text: imageError || 'Erro no upload da imagem' });
+          return;
+        }
+      }
+
+      // Atualizar formData com a URL da imagem
+      const updatedFormData = { ...formData, image: imageUrl };
+
       let success = false;
 
       if (editingItem) {
         // Atualizar item existente
-        success = await updateMenuItem(editingItem.id!, formData);
+        success = await updateMenuItem(editingItem.id!, updatedFormData);
         if (success) {
           setMessage({ type: 'success', text: 'Prato atualizado com sucesso!' });
           setEditingItem(null);
         }
       } else {
         // Criar novo item
-        success = await createMenuItem(formData);
+        success = await createMenuItem(updatedFormData);
         if (success) {
           setMessage({ type: 'success', text: 'Prato adicionado com sucesso!' });
         }
@@ -86,6 +133,11 @@ export default function MenuManagement({ restaurantId }: MenuManagementProps) {
 
       if (success) {
         setFormData({ name: '', description: '', price: 0, image: '' });
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
         setShowForm(false);
       } else {
         setMessage({ type: 'error', text: error || 'Erro ao salvar prato. Tente novamente.' });
@@ -240,29 +292,70 @@ export default function MenuManagement({ restaurantId }: MenuManagementProps) {
               <div className="mb-3">
                 <label htmlFor="image" className="form-label">
                   <i className="fas fa-image me-1"></i>
-                  URL da Imagem
+                  Imagem do Prato
                 </label>
                 <input
-                  type="url"
+                  ref={fileInputRef}
+                  type="file"
                   className="form-control"
                   id="image"
                   name="image"
-                  value={formData.image}
-                  onChange={handleInputChange}
-                  placeholder="https://exemplo.com/imagem.jpg"
+                  accept="image/jpeg,image/jpg,image/png,image/svg+xml"
+                  onChange={handleFileSelect}
                 />
+                <small className="form-text text-muted">
+                  Formatos aceitos: JPG, PNG, SVG (máximo 5MB)
+                </small>
+
+                {/* Preview da imagem */}
+                {(previewUrl || formData.image) && (
+                  <div className="mt-3">
+                    <div className="position-relative d-inline-block">
+                      <img
+                        src={previewUrl || formData.image}
+                        alt="Preview"
+                        className="img-thumbnail"
+                        style={{ maxWidth: '150px', maxHeight: '100px', objectFit: 'cover' }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger position-absolute top-0 end-0 m-1"
+                        onClick={handleRemoveImage}
+                        title="Remover imagem"
+                      >
+                        <i className="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Status do upload */}
+                {imageUploading && (
+                  <div className="mt-2">
+                    <div className="spinner-border spinner-border-sm me-2" role="status">
+                      <span className="visually-hidden">Fazendo upload...</span>
+                    </div>
+                    <small className="text-muted">Fazendo upload da imagem...</small>
+                  </div>
+                )}
+
+                {imageError && (
+                  <div className="mt-2">
+                    <small className="text-danger">{imageError}</small>
+                  </div>
+                )}
               </div>
 
               <div className="d-flex gap-2">
                 <button
                   type="submit"
                   className="btn btn-success"
-                  disabled={loading}
+                  disabled={loading || imageUploading}
                 >
-                  {loading ? (
+                  {(loading || imageUploading) ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Salvando...
+                      {imageUploading ? 'Fazendo upload...' : 'Salvando...'}
                     </>
                   ) : (
                     <>
