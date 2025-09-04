@@ -45,6 +45,27 @@ export default function OrderBoard({ orders }: OrderBoardProps) {
     return orders.filter(order => order.status === status);
   };
 
+  // Se não há pedidos, mostrar mensagem informativa
+  if (orders.length === 0) {
+    return (
+      <div className="order-board">
+        <div className="text-center py-5">
+          <i className="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+          <h4 className="text-muted">Nenhum pedido ainda</h4>
+          <p className="text-muted">
+            Quando você receber pedidos, eles aparecerão aqui organizados por status.
+          </p>
+          <div className="mt-4">
+            <small className="text-muted">
+              <i className="fas fa-info-circle me-1"></i>
+              Compartilhe o link do seu restaurante para começar a receber pedidos!
+            </small>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="order-board">
       {/* Desktop Layout */}

@@ -152,12 +152,12 @@ export default function RestaurantesPage() {
                 <div className="card h-100 border-0 shadow-sm hover-shadow">
                   <div className="position-relative">
                     {restaurante.image ? (
-                      <img
+                    <img
                         src={restaurante.image}
-                        className="card-img-top"
+                      className="card-img-top"
                         alt={restaurante.name}
-                        style={{ height: '200px', objectFit: 'cover' }}
-                      />
+                      style={{ height: '200px', objectFit: 'cover' }}
+                    />
                     ) : (
                       <div
                         className="card-img-top d-flex align-items-center justify-content-center bg-light"

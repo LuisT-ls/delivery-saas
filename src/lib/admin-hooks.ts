@@ -18,10 +18,11 @@ export function useOrdersRealtime(restaurantId: string | null) {
     setLoading(true);
     setError(null);
 
+    // Usar apenas where para evitar necessidade de índice composto
+    // A ordenação será feita no cliente
     const q = query(
       collection(db, 'orders'),
-      where('restaurantId', '==', restaurantId),
-      orderBy('createdAt', 'desc')
+      where('restaurantId', '==', restaurantId)
     );
 
     const unsubscribe = onSnapshot(
@@ -43,12 +44,25 @@ export function useOrdersRealtime(restaurantId: string | null) {
             updatedAt: data.updatedAt?.toDate() || new Date()
           });
         });
+        
+        // Ordenar por data de criação (mais recente primeiro)
+        newOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        
         setOrders(newOrders);
         setLoading(false);
       },
       (error) => {
         console.error('Erro ao escutar pedidos:', error);
-        setError('Erro ao carregar pedidos');
+        
+        // Tratamento específico para erro de índice
+        if (error.code === 'failed-precondition') {
+          setError('Erro de configuração do banco de dados. Recarregue a página.');
+        } else if (error.code === 'permission-denied') {
+          setError('Sem permissão para acessar os pedidos.');
+        } else {
+          setError('Erro ao carregar pedidos. Tente novamente.');
+        }
+        
         setLoading(false);
       }
     );
