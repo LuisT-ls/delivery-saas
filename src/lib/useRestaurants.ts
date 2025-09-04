@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   collection, 
   getDocs, 
@@ -22,7 +22,7 @@ export function useRestaurants() {
   // });
 
   // Carregar todos os restaurantes
-  const loadRestaurants = async () => {
+  const loadRestaurants = useCallback(async () => {
     if (!db) {
       console.error('Firebase não inicializado');
       setError('Erro de configuração do banco de dados');
@@ -83,10 +83,10 @@ export function useRestaurants() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Carregar restaurantes por categoria
-  const loadRestaurantsByCategory = async (category: string) => {
+  const loadRestaurantsByCategory = useCallback(async (category: string) => {
     if (!db) {
       console.error('Firebase não inicializado');
       setError('Erro de configuração do banco de dados');
@@ -152,7 +152,7 @@ export function useRestaurants() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Carregar restaurantes quando o hook for inicializado
   useEffect(() => {
@@ -160,7 +160,7 @@ export function useRestaurants() {
     if (typeof window !== 'undefined' && db) {
       loadRestaurants();
     }
-  }, []);
+  }, [loadRestaurants]);
 
   return {
     restaurants,
