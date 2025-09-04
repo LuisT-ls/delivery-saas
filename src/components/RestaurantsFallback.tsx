@@ -1,99 +1,64 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { useRestaurants } from '@/lib/useRestaurants'
-import { Restaurant } from '@/types/restaurant'
-import RestaurantsFallback from '@/components/RestaurantsFallback'
+import { useState } from 'react';
+import Link from 'next/link';
 
-export default function RestaurantesPage() {
-  const [filtroCategoria, setFiltroCategoria] = useState('')
-  const [ordenacao, setOrdenacao] = useState('nome')
-  const { restaurants, loading, error, loadRestaurants, loadRestaurantsByCategory } = useRestaurants()
+// Dados mockados como fallback
+const mockRestaurantes = [
+  {
+    id: 'rest1',
+    name: 'Restaurante Italiano Bella Vista',
+    category: 'Italiana',
+    rating: 4.8,
+    deliveryTime: '30-45 min',
+    deliveryFee: 5.00,
+    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop',
+    address: 'Rua das Flores, 123 - Centro'
+  },
+  {
+    id: 'rest2',
+    name: 'Sushi Master',
+    category: 'Japonesa',
+    rating: 4.9,
+    deliveryTime: '25-40 min',
+    deliveryFee: 8.00,
+    image: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop',
+    address: 'Av. Paulista, 456 - Bela Vista'
+  },
+  {
+    id: 'rest3',
+    name: 'Burger House',
+    category: 'Hambúrgueres',
+    rating: 4.6,
+    deliveryTime: '20-35 min',
+    deliveryFee: 3.00,
+    image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop',
+    address: 'Rua da Liberdade, 789 - Centro'
+  }
+];
 
-  // Verificar se as funções estão disponíveis
-  const hasLoadFunctions = loadRestaurants && loadRestaurantsByCategory
+export default function RestaurantsFallback() {
+  const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [ordenacao, setOrdenacao] = useState('nome');
 
-  const categorias = [...new Set(restaurants.map(r => r.category))]
+  const categorias = [...new Set(mockRestaurantes.map(r => r.category))];
 
-  const restaurantesFiltrados = restaurants
+  const restaurantesFiltrados = mockRestaurantes
     .filter(rest => !filtroCategoria || rest.category === filtroCategoria)
     .sort((a, b) => {
       switch (ordenacao) {
         case 'avaliacao':
-          return b.rating - a.rating
+          return b.rating - a.rating;
         case 'tempo':
-          // Extrair o primeiro número do tempo de entrega (ex: "30-45 min" -> 30)
-          const tempoA = parseInt(a.deliveryTime?.split('-')[0]) || 0
-          const tempoB = parseInt(b.deliveryTime?.split('-')[0]) || 0
-          return tempoA - tempoB
+          const tempoA = parseInt(a.deliveryTime.split('-')[0]) || 0;
+          const tempoB = parseInt(b.deliveryTime.split('-')[0]) || 0;
+          return tempoA - tempoB;
         case 'taxa':
-          return a.deliveryFee - b.deliveryFee
+          return a.deliveryFee - b.deliveryFee;
         default:
-          return a.name.localeCompare(b.name)
+          return a.name.localeCompare(b.name);
       }
-    })
-
-  // Carregar restaurantes por categoria quando o filtro mudar
-  useEffect(() => {
-    if (!hasLoadFunctions) {
-      console.warn('Funções de carregamento não disponíveis')
-      return
-    }
-
-    if (filtroCategoria) {
-      loadRestaurantsByCategory(filtroCategoria)
-    } else {
-      // Recarregar todos os restaurantes se não há filtro
-      loadRestaurants()
-    }
-  }, [filtroCategoria, hasLoadFunctions])
-
-  if (loading) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-12 text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Carregando...</span>
-            </div>
-            <p className="mt-3">Carregando restaurantes...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-12 text-center">
-            <div className="alert alert-danger">
-              <i className="fas fa-exclamation-triangle me-2"></i>
-              {error}
-            </div>
-            <button
-              className="btn btn-primary mt-3"
-              onClick={() => {
-                if (hasLoadFunctions) {
-                  loadRestaurants()
-                }
-              }}
-            >
-              <i className="fas fa-refresh me-2"></i>
-              Tentar Novamente
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!hasLoadFunctions) {
-    console.warn('Funções de carregamento não disponíveis, usando fallback');
-    return <RestaurantsFallback />;
-  }
+    });
 
   return (
     <div className="container py-5">
@@ -105,6 +70,10 @@ export default function RestaurantesPage() {
             <p className="lead text-secondary">
               Encontre os melhores restaurantes da sua região
             </p>
+            <div className="alert alert-info">
+              <i className="fas fa-info-circle me-2"></i>
+              <strong>Modo Demo:</strong> Exibindo dados de exemplo. Conecte-se ao Firebase para ver dados reais.
+            </div>
           </div>
 
           {/* Filtros e Ordenação */}
@@ -151,25 +120,16 @@ export default function RestaurantesPage() {
               <div key={restaurante.id} className="col-md-6 col-lg-4">
                 <div className="card h-100 border-0 shadow-sm hover-shadow">
                   <div className="position-relative">
-                    {restaurante.image ? (
-                      <img
-                        src={restaurante.image}
-                        className="card-img-top"
-                        alt={restaurante.name}
-                        style={{ height: '200px', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div
-                        className="card-img-top d-flex align-items-center justify-content-center bg-light"
-                        style={{ height: '200px' }}
-                      >
-                        <i className="fas fa-store fa-3x text-muted"></i>
-                      </div>
-                    )}
+                    <img
+                      src={restaurante.image}
+                      className="card-img-top"
+                      alt={restaurante.name}
+                      style={{ height: '200px', objectFit: 'cover' }}
+                    />
                     <div className="position-absolute top-0 end-0 m-2">
                       <span className="badge bg-primary">
                         <i className="fas fa-star me-1"></i>
-                        {restaurante.rating.toFixed(1)}
+                        {restaurante.rating}
                       </span>
                     </div>
                   </div>
@@ -201,7 +161,7 @@ export default function RestaurantesPage() {
                           <i className="fas fa-star me-1"></i>
                           Avaliação
                         </small>
-                        <small className="fw-bold">{restaurante.rating.toFixed(1)}</small>
+                        <small className="fw-bold">{restaurante.rating}</small>
                       </div>
                     </div>
 
@@ -232,7 +192,7 @@ export default function RestaurantesPage() {
           <div className="row mt-5 pt-5 border-top">
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-store fa-2x text-primary mb-2"></i>
-              <h4>{restaurants.length}</h4>
+              <h4>{mockRestaurantes.length}</h4>
               <small className="text-secondary">Restaurantes</small>
             </div>
             <div className="col-md-3 text-center mb-3">
@@ -243,25 +203,19 @@ export default function RestaurantesPage() {
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-star fa-2x text-primary mb-2"></i>
               <h4>
-                {restaurants.length > 0
-                  ? (restaurants.reduce((acc, r) => acc + r.rating, 0) / restaurants.length).toFixed(1)
-                  : '0.0'
-                }
+                {(mockRestaurantes.reduce((acc, r) => acc + r.rating, 0) / mockRestaurantes.length).toFixed(1)}
               </h4>
               <small className="text-secondary">Avaliação Média</small>
             </div>
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-clock fa-2x text-primary mb-2"></i>
               <h4>
-                {restaurants.length > 0
-                  ? Math.round(
-                    restaurants.reduce((acc, r) => {
-                      const tempo = parseInt(r.deliveryTime.split('-')[0]) || 0
-                      return acc + tempo
-                    }, 0) / restaurants.length
-                  ) + ' min'
-                  : '0 min'
-                }
+                {Math.round(
+                  mockRestaurantes.reduce((acc, r) => {
+                    const tempo = parseInt(r.deliveryTime.split('-')[0]) || 0;
+                    return acc + tempo;
+                  }, 0) / mockRestaurantes.length
+                )} min
               </h4>
               <small className="text-secondary">Tempo Médio</small>
             </div>
@@ -269,5 +223,5 @@ export default function RestaurantesPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

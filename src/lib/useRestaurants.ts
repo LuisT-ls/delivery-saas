@@ -15,8 +15,20 @@ export function useRestaurants() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Debug log
+  console.log('useRestaurants hook initialized', { 
+    hasDb: !!db, 
+    isClient: typeof window !== 'undefined' 
+  });
+
   // Carregar todos os restaurantes
   const loadRestaurants = async () => {
+    if (!db) {
+      console.error('Firebase não inicializado');
+      setError('Erro de configuração do banco de dados');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -35,9 +47,9 @@ export function useRestaurants() {
       secureLog('Restaurantes carregados com sucesso', { 
         count: restaurantsList.length 
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao carregar restaurantes:', err);
-      setError('Erro ao carregar restaurantes');
+      setError(`Erro ao carregar restaurantes: ${err.message || 'Erro desconhecido'}`);
     } finally {
       setLoading(false);
     }
@@ -45,6 +57,12 @@ export function useRestaurants() {
 
   // Carregar restaurantes por categoria
   const loadRestaurantsByCategory = async (category: string) => {
+    if (!db) {
+      console.error('Firebase não inicializado');
+      setError('Erro de configuração do banco de dados');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -68,9 +86,9 @@ export function useRestaurants() {
         category,
         count: restaurantsList.length 
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao carregar restaurantes por categoria:', err);
-      setError('Erro ao carregar restaurantes por categoria');
+      setError(`Erro ao carregar restaurantes por categoria: ${err.message || 'Erro desconhecido'}`);
     } finally {
       setLoading(false);
     }
@@ -78,7 +96,10 @@ export function useRestaurants() {
 
   // Carregar restaurantes quando o hook for inicializado
   useEffect(() => {
-    loadRestaurants();
+    // Verificar se o Firebase está disponível antes de tentar carregar
+    if (typeof window !== 'undefined' && db) {
+      loadRestaurants();
+    }
   }, []);
 
   return {
