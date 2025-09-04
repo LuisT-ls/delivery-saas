@@ -17,7 +17,7 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="container mt-3 mt-md-5 px-3">
+      <div className="container mt-3 mt-md-5 mb-5 mb-md-6 px-3">
         <div className="row justify-content-center">
           <div className="col-12 col-md-6 text-center">
             <LoadingSpinner />
@@ -30,7 +30,7 @@ export default function OnboardingPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="container mt-3 mt-md-5 px-3">
+      <div className="container mt-3 mt-md-5 mb-5 mb-md-6 px-3">
         <div className="row justify-content-center">
           <div className="col-12 col-md-6 col-lg-4">
             <div className="card shadow text-center">

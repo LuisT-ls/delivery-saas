@@ -32,12 +32,47 @@ export default function RestaurantForm() {
     }
   }, [restaurant]);
 
+  const formatPhoneNumber = (value: string) => {
+    // Remove todos os caracteres não numéricos
+    const numbers = value.replace(/\D/g, '');
+    
+    // Se não há números, retorna vazio
+    if (!numbers) return '';
+    
+    // Se tem 2 dígitos ou menos, retorna apenas os números
+    if (numbers.length <= 2) return numbers;
+    
+    // Se tem 3-6 dígitos, formata como (XX) XXXXX
+    if (numbers.length <= 6) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    }
+    
+    // Se tem 7-10 dígitos, formata como (XX) XXXXX-XXXX
+    if (numbers.length <= 10) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+    }
+    
+    // Se tem mais de 10 dígitos, limita a 10 e formata
+    const limitedNumbers = numbers.slice(0, 10);
+    return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 7)}-${limitedNumbers.slice(7)}`;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Formatação especial para o campo de telefone
+    if (name === 'phone') {
+      const formattedValue = formatPhoneNumber(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: formattedValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,10 +109,10 @@ export default function RestaurantForm() {
       return;
     }
 
-    // Validar formato de telefone brasileiro
-    const phoneRegex = /^\(\d{2}\) \d{5}-\d{4}$/;
+    // Validar formato de telefone brasileiro (aceita tanto celular quanto fixo)
+    const phoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
     if (!phoneRegex.test(formData.phone.trim())) {
-      setMessage({ type: 'error', text: 'Telefone deve estar no formato (71) 99999-9999' });
+      setMessage({ type: 'error', text: 'Telefone deve estar no formato (71) 99999-9999 ou (71) 3333-4444' });
       return;
     }
 
@@ -135,7 +170,7 @@ export default function RestaurantForm() {
   };
 
   return (
-    <div className="container mt-3 mt-md-4 px-3">
+    <div className="container mt-3 mt-md-4 mb-5 mb-md-6 px-3">
       <div className="row justify-content-center">
         <div className="col-12 col-md-6">
           <div className="card shadow onboarding-card">
@@ -204,7 +239,7 @@ export default function RestaurantForm() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="(71) 99999-9999"
+                    placeholder="Digite apenas os números (ex: 71996656565)"
                     required
                   />
                 </div>
