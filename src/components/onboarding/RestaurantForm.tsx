@@ -135,36 +135,37 @@ export default function RestaurantForm() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-3 mt-md-4 px-3">
       <div className="row justify-content-center">
-        <div className="col-md-8 col-lg-6">
-          <div className="card shadow">
+        <div className="col-12 col-md-6">
+          <div className="card shadow onboarding-card">
             <div className="card-header bg-primary text-white">
-              <h3 className="mb-0">
+              <h3 className="mb-0 h4-responsive h3-md-responsive">
                 {isEditing ? 'Editar Restaurante' : 'Cadastro do Restaurante'}
               </h3>
             </div>
-            <div className="card-body">
+            <div className="card-body p-3 p-md-4">
               {message && (
                 <div className={`alert alert-${message.type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`}>
-                  {message.text}
+                  <span className="h6-responsive">{message.text}</span>
                   <button
                     type="button"
                     className="btn-close"
                     onClick={() => setMessage(null)}
+                    aria-label="Fechar"
                   ></button>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} className="onboarding-form">
                 <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    <i className="fas fa-store me-2"></i>
+                  <label htmlFor="name" className="form-label h6-responsive">
+                    <i className="fas fa-store"></i>
                     Nome do Restaurante
                   </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control w-100"
                     id="name"
                     name="name"
                     value={formData.name}
@@ -175,13 +176,13 @@ export default function RestaurantForm() {
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="address" className="form-label">
-                    <i className="fas fa-map-marker-alt me-2"></i>
+                  <label htmlFor="address" className="form-label h6-responsive">
+                    <i className="fas fa-map-marker-alt"></i>
                     Endereço
                   </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control w-100"
                     id="address"
                     name="address"
                     value={formData.address}
@@ -191,14 +192,14 @@ export default function RestaurantForm() {
                   />
                 </div>
 
-                <div className="mb-3">
-                  <label htmlFor="phone" className="form-label">
-                    <i className="fas fa-phone me-2"></i>
+                <div className="mb-4">
+                  <label htmlFor="phone" className="form-label h6-responsive">
+                    <i className="fas fa-phone"></i>
                     Telefone/WhatsApp
                   </label>
                   <input
                     type="tel"
-                    className="form-control"
+                    className="form-control w-100"
                     id="phone"
                     name="phone"
                     value={formData.phone}
@@ -208,26 +209,30 @@ export default function RestaurantForm() {
                   />
                 </div>
 
-                <div className="d-grid">
+                <div className="d-grid d-md-flex justify-content-md-end">
                   <button
                     type="submit"
-                    className="btn btn-primary btn-lg"
+                    className="btn btn-primary btn-lg w-100 w-md-auto"
                     disabled={loading}
                   >
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        {isEditing ? 'Atualizando...' : 'Criando...'}
+                        <span className="h6-responsive">
+                          {isEditing ? 'Atualizando...' : 'Criando...'}
+                        </span>
                       </>
                     ) : (
-                      isEditing ? 'Atualizar Restaurante' : 'Criar Restaurante'
+                      <span className="h6-responsive">
+                        {isEditing ? 'Atualizar Restaurante' : 'Criar Restaurante'}
+                      </span>
                     )}
                   </button>
                 </div>
 
                 {loading && (
                   <div className="text-center mt-3">
-                    <small className="text-muted">
+                    <small className="text-muted h6-responsive">
                       <i className="fas fa-spinner fa-spin me-1"></i>
                       Processando...
                     </small>

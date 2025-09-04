@@ -837,3 +837,125 @@ body {
 .contact-text-light:hover {
   color: #6c757d !important;
 }
+
+/* Onboarding Page Responsive Styles */
+.h6-responsive {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+.h2-md-responsive {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.h3-md-responsive {
+  font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+}
+
+.h4-md-responsive {
+  font-size: clamp(1.125rem, 3vw, 1.5rem);
+}
+
+/* Onboarding Form Responsive Styles */
+.onboarding-form .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.onboarding-form .form-label i {
+  width: 20px;
+  text-align: center;
+  margin-right: 0.75rem;
+  color: #007bff;
+}
+
+.onboarding-form .form-control {
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: #fff;
+}
+
+.onboarding-form .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.onboarding-form .form-control.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Onboarding Card Responsive */
+.onboarding-card {
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 12px;
+}
+
+.onboarding-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.onboarding-card .card-header {
+  border-radius: 12px 12px 0 0 !important;
+  border-bottom: none;
+}
+
+/* Responsive adjustments for onboarding */
+@media (max-width: 767.98px) {
+  .onboarding-card .card-body {
+    padding: 1.5rem !important;
+  }
+
+  .onboarding-form .form-control {
+    padding: 0.75rem 0.875rem;
+    font-size: 1rem;
+  }
+
+  .onboarding-form .form-label {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .onboarding-form .form-label i {
+    width: 18px;
+    margin-right: 0.5rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .onboarding-card .card-body {
+    padding: 1.25rem !important;
+  }
+
+  .onboarding-form .form-control {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .onboarding-form .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .onboarding-form .form-label i {
+    width: 16px;
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .onboarding-card .h3-md-responsive {
+    font-size: 1.25rem;
+  }
+
+  .onboarding-card .h4-md-responsive {
+    font-size: 1.125rem;
+  }
+}
