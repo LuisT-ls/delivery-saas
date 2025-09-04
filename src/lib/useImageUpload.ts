@@ -34,6 +34,12 @@ export function useImageUpload() {
       return null;
     }
 
+    // Debug: Log da configuração do Storage
+    console.log('🔧 Storage configurado:', {
+      storageBucket: storageUrl,
+      projectId: storage.app.options.projectId
+    });
+
     // Validar tipo de arquivo
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
     if (!allowedTypes.includes(file.type)) {
@@ -67,7 +73,23 @@ export function useImageUpload() {
       };
     } catch (err: any) {
       console.error('Erro no upload:', err);
-      setError(`Erro no upload: ${err.message || 'Erro desconhecido'}`);
+      
+      // Tratar erros específicos
+      let errorMessage = `Erro no upload: ${err.message || 'Erro desconhecido'}`;
+      
+      if (err.message && err.message.includes('CORS')) {
+        errorMessage = 'Erro de CORS: Verifique se o Firebase Storage está configurado corretamente.';
+      } else if (err.message && err.message.includes('permission')) {
+        errorMessage = 'Erro de permissão: Verifique as regras do Firebase Storage.';
+      } else if (err.message && err.message.includes('network')) {
+        errorMessage = 'Erro de rede: Verifique sua conexão com a internet.';
+      } else if (err.code === 'storage/unauthorized') {
+        errorMessage = 'Não autorizado: Verifique as regras de segurança do Firebase Storage.';
+      } else if (err.code === 'storage/object-not-found') {
+        errorMessage = 'Objeto não encontrado: Verifique se o bucket está configurado corretamente.';
+      }
+      
+      setError(errorMessage);
       return null;
     } finally {
       setUploading(false);

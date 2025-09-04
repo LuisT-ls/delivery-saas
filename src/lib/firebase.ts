@@ -13,6 +13,15 @@ if (isProduction && !hasFirebaseConfig) {
   console.error('❌ Firebase não configurado em produção! Configure as variáveis de ambiente no Vercel.');
 }
 
+// Debug: Log das configurações em produção
+if (isProduction && hasFirebaseConfig) {
+  console.log('🔧 Firebase configurado:', {
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+  });
+}
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'mock_api_key_for_build',
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'mock-project.firebaseapp.com',
