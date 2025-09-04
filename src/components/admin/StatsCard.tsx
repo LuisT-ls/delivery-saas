@@ -36,58 +36,58 @@ export default function StatsCard({ orders }: StatsCardProps) {
   const totalRevenue = getTodayOrders().reduce((sum, order) => sum + order.total, 0);
 
   return (
-    <div className="row mb-4">
-      <div className="col-md-3 mb-3">
-        <div className="card bg-primary text-white">
-          <div className="card-body">
-            <div className="d-flex justify-content-between">
+    <div className="row mb-4 g-3">
+      <div className="col-12 col-sm-6 col-md-3">
+        <div className="card bg-primary text-white h-100">
+          <div className="card-body p-3 p-md-4">
+            <div className="d-flex justify-content-between align-items-center">
               <div>
-                <h4 className="mb-0">{getOrdersByStatus('pending').length}</h4>
-                <small>Pedidos Pendentes</small>
+                <h4 className="mb-0 h3-responsive">{getOrdersByStatus('pending').length}</h4>
+                <small className="h6-responsive">Pedidos Pendentes</small>
               </div>
-              <i className="fas fa-clock fa-2x opacity-75"></i>
+              <i className="fas fa-clock fa-2x fa-md-3x opacity-75"></i>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="col-md-3 mb-3">
-        <div className="card bg-warning text-white">
-          <div className="card-body">
-            <div className="d-flex justify-content-between">
+      <div className="col-12 col-sm-6 col-md-3">
+        <div className="card bg-warning text-white h-100">
+          <div className="card-body p-3 p-md-4">
+            <div className="d-flex justify-content-between align-items-center">
               <div>
-                <h4 className="mb-0">{getUrgentOrders().length}</h4>
-                <small>Pedidos Urgentes</small>
+                <h4 className="mb-0 h3-responsive">{getUrgentOrders().length}</h4>
+                <small className="h6-responsive">Pedidos Urgentes</small>
               </div>
-              <i className="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+              <i className="fas fa-exclamation-triangle fa-2x fa-md-3x opacity-75"></i>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="col-md-3 mb-3">
-        <div className="card bg-success text-white">
-          <div className="card-body">
-            <div className="d-flex justify-content-between">
+      <div className="col-12 col-sm-6 col-md-3">
+        <div className="card bg-success text-white h-100">
+          <div className="card-body p-3 p-md-4">
+            <div className="d-flex justify-content-between align-items-center">
               <div>
-                <h4 className="mb-0">{getTodayOrders().length}</h4>
-                <small>Pedidos Hoje</small>
+                <h4 className="mb-0 h3-responsive">{getTodayOrders().length}</h4>
+                <small className="h6-responsive">Pedidos Hoje</small>
               </div>
-              <i className="fas fa-calendar-day fa-2x opacity-75"></i>
+              <i className="fas fa-calendar-day fa-2x fa-md-3x opacity-75"></i>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="col-md-3 mb-3">
-        <div className="card bg-info text-white">
-          <div className="card-body">
-            <div className="d-flex justify-content-between">
+      <div className="col-12 col-sm-6 col-md-3">
+        <div className="card bg-info text-white h-100">
+          <div className="card-body p-3 p-md-4">
+            <div className="d-flex justify-content-between align-items-center">
               <div>
-                <h4 className="mb-0">{formatCurrency(totalRevenue)}</h4>
-                <small>Receita Hoje</small>
+                <h4 className="mb-0 h3-responsive">{formatCurrency(totalRevenue)}</h4>
+                <small className="h6-responsive">Receita Hoje</small>
               </div>
-              <i className="fas fa-dollar-sign fa-2x opacity-75"></i>
+              <i className="fas fa-dollar-sign fa-2x fa-md-3x opacity-75"></i>
             </div>
           </div>
         </div>

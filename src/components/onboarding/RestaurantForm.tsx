@@ -35,28 +35,28 @@ export default function RestaurantForm() {
   const formatPhoneNumber = (value: string) => {
     // Remove todos os caracteres não numéricos
     const numbers = value.replace(/\D/g, '');
-    
+
     // Se não há números, retorna vazio
     if (!numbers) return '';
-    
+
     // Se tem 2 dígitos ou menos, retorna apenas os números
     if (numbers.length <= 2) return numbers;
-    
+
     // Se tem 3 dígitos, formata como (XX) X
     if (numbers.length === 3) {
       return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
     }
-    
+
     // Se tem 4-7 dígitos, formata como (XX) X XXXX
     if (numbers.length <= 7) {
       return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3)}`;
     }
-    
+
     // Se tem 8-11 dígitos, formata como (XX) X XXXX-XXXX
     if (numbers.length <= 11) {
       return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 3)} ${numbers.slice(3, 7)}-${numbers.slice(7)}`;
     }
-    
+
     // Se tem mais de 11 dígitos, limita a 11 e formata
     const limitedNumbers = numbers.slice(0, 11);
     return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 3)} ${limitedNumbers.slice(3, 7)}-${limitedNumbers.slice(7)}`;

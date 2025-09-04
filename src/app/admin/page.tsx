@@ -143,63 +143,76 @@ export default function AdminPage() {
       <NotificationSound play={newOrderAlert} />
 
       <header className="admin-header">
-        <div className="container">
-          <div className="d-flex justify-content-between align-items-center">
-            <h1 className="mb-0">
-              <i className="fas fa-utensils me-2"></i>
-              Painel do Restaurante: {restaurant?.name || 'Meu Restaurante'}
-            </h1>
-            <div className="d-flex align-items-center">
-              <div className="me-4">
-                <div className="d-flex gap-3">
+        <div className="container-fluid px-3">
+          <div className="row align-items-center">
+            <div className="col-12 col-lg-6 mb-3 mb-lg-0">
+              <h1 className="mb-0 h4-responsive h3-lg-responsive">
+                <i className="fas fa-utensils me-2"></i>
+                <span className="d-none d-md-inline">Painel do Restaurante: </span>
+                <span className="d-md-none">Restaurante: </span>
+                {restaurant?.name || 'Meu Restaurante'}
+              </h1>
+            </div>
+            <div className="col-12 col-lg-6">
+              <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
+                <div className="d-flex flex-wrap gap-2">
                   <span className="badge bg-warning">
                     <i className="fas fa-clock me-1"></i>
-                    {orders.filter(o => o.status === 'pending').length} Pendentes
+                    <span className="d-none d-sm-inline">{orders.filter(o => o.status === 'pending').length} Pendentes</span>
+                    <span className="d-sm-none">{orders.filter(o => o.status === 'pending').length}</span>
                   </span>
                   <span className="badge bg-info">
                     <i className="fas fa-fire me-1"></i>
-                    {orders.filter(o => o.status === 'preparing').length} Preparando
+                    <span className="d-none d-sm-inline">{orders.filter(o => o.status === 'preparing').length} Preparando</span>
+                    <span className="d-sm-none">{orders.filter(o => o.status === 'preparing').length}</span>
                   </span>
                   <span className="badge bg-success">
                     <i className="fas fa-check-circle me-1"></i>
-                    {orders.filter(o => o.status === 'ready').length} Prontos
+                    <span className="d-none d-sm-inline">{orders.filter(o => o.status === 'ready').length} Prontos</span>
+                    <span className="d-sm-none">{orders.filter(o => o.status === 'ready').length}</span>
                   </span>
                 </div>
+                <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2">
+                  <span className="text-white-50 small d-none d-md-inline">
+                    <span className="status-indicator status-online me-1"></span>
+                    <i className="fas fa-user me-1"></i>
+                    {user?.email}
+                  </span>
+                  <div className="d-flex gap-2">
+                    <button
+                      className={`btn btn-sm ${getNotificationButtonClass()}`}
+                      onClick={requestNotificationPermission}
+                      disabled={notificationStatus === 'requesting' || notificationStatus === 'unsupported'}
+                      title={
+                        notificationStatus === 'granted'
+                          ? 'Notificações push ativas'
+                          : notificationStatus === 'unsupported'
+                            ? 'Notificações push não são suportadas neste navegador'
+                            : 'Ativar notificações push para novos pedidos'
+                      }
+                    >
+                      <i className={`fas ${notificationStatus === 'granted' ? 'fa-bell' : 'fa-bell-slash'} me-1`}></i>
+                      <span className="d-none d-sm-inline">{getNotificationButtonText()}</span>
+                      <span className="d-sm-none">Notif.</span>
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={handleLogout}
+                    >
+                      <i className="fas fa-sign-out-alt me-1"></i>
+                      <span className="d-none d-sm-inline">Sair</span>
+                      <span className="d-sm-none">Sair</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <span className="me-3">
-                <span className="status-indicator status-online"></span>
-                <i className="fas fa-user me-1"></i>
-                {user?.email}
-              </span>
-              <button
-                className={`btn ${getNotificationButtonClass()} me-2`}
-                onClick={requestNotificationPermission}
-                disabled={notificationStatus === 'requesting' || notificationStatus === 'unsupported'}
-                title={
-                  notificationStatus === 'granted'
-                    ? 'Notificações push ativas'
-                    : notificationStatus === 'unsupported'
-                      ? 'Notificações push não são suportadas neste navegador'
-                      : 'Ativar notificações push para novos pedidos'
-                }
-              >
-                <i className={`fas ${notificationStatus === 'granted' ? 'fa-bell' : 'fa-bell-slash'} me-1`}></i>
-                {getNotificationButtonText()}
-              </button>
-              <button
-                className="btn btn-outline-danger"
-                onClick={handleLogout}
-              >
-                <i className="fas fa-sign-out-alt me-1"></i>
-                Sair
-              </button>
             </div>
           </div>
         </div>
       </header>
 
       <main className="admin-main">
-        <div className="container-fluid">
+        <div className="container-fluid px-3">
           {error && (
             <div className="alert alert-danger alert-dismissible fade show" role="alert">
               <i className="fas fa-exclamation-triangle me-2"></i>
