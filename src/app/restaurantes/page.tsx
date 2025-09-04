@@ -1,93 +1,74 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-
-// Dados mockados de restaurantes
-const mockRestaurantes = [
-  {
-    id: 'rest1',
-    nome: 'Restaurante Italiano Bella Vista',
-    categoria: 'Italiana',
-    avaliacao: 4.8,
-    tempoEntrega: '30-45 min',
-    taxaEntrega: 'R$ 5,00',
-    imagem: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop',
-    descricao: 'Autêntica culinária italiana com massas frescas e pizzas tradicionais.'
-  },
-  {
-    id: 'rest2',
-    nome: 'Sushi Master',
-    categoria: 'Japonesa',
-    avaliacao: 4.9,
-    tempoEntrega: '25-40 min',
-    taxaEntrega: 'R$ 8,00',
-    imagem: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400&h=300&fit=crop',
-    descricao: 'Sushi e sashimi frescos preparados por chefs especializados.'
-  },
-  {
-    id: 'rest3',
-    nome: 'Burger House',
-    categoria: 'Hambúrgueres',
-    avaliacao: 4.6,
-    tempoEntrega: '20-35 min',
-    taxaEntrega: 'R$ 3,00',
-    imagem: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop',
-    descricao: 'Hambúrgueres artesanais com ingredientes premium e batatas fritas crocantes.'
-  },
-  {
-    id: 'rest4',
-    nome: 'Pizza Express',
-    categoria: 'Pizzaria',
-    avaliacao: 4.7,
-    tempoEntrega: '35-50 min',
-    taxaEntrega: 'R$ 6,00',
-    imagem: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
-    descricao: 'Pizzas tradicionais e gourmet com massa artesanal e ingredientes frescos.'
-  },
-  {
-    id: 'rest5',
-    nome: 'Churrascaria Gaúcha',
-    categoria: 'Churrascaria',
-    avaliacao: 4.5,
-    tempoEntrega: '40-60 min',
-    taxaEntrega: 'R$ 10,00',
-    imagem: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop',
-    descricao: 'Carnes nobres grelhadas no estilo gaúcho com acompanhamentos tradicionais.'
-  },
-  {
-    id: 'rest6',
-    nome: 'Doceria Sweet Dreams',
-    categoria: 'Doces e Sobremesas',
-    avaliacao: 4.8,
-    tempoEntrega: '15-30 min',
-    taxaEntrega: 'R$ 4,00',
-    imagem: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=300&fit=crop',
-    descricao: 'Doces artesanais, bolos e sobremesas deliciosas para adoçar seu dia.'
-  }
-]
+import { useRestaurants } from '@/lib/useRestaurants'
+import { Restaurant } from '@/types/restaurant'
 
 export default function RestaurantesPage() {
   const [filtroCategoria, setFiltroCategoria] = useState('')
   const [ordenacao, setOrdenacao] = useState('nome')
+  const { restaurants, loading, error, loadRestaurantsByCategory } = useRestaurants()
 
-  const categorias = [...new Set(mockRestaurantes.map(r => r.categoria))]
+  const categorias = [...new Set(restaurants.map(r => r.category))]
 
-  const restaurantesFiltrados = mockRestaurantes
-    .filter(rest => !filtroCategoria || rest.categoria === filtroCategoria)
+  const restaurantesFiltrados = restaurants
+    .filter(rest => !filtroCategoria || rest.category === filtroCategoria)
     .sort((a, b) => {
       switch (ordenacao) {
         case 'avaliacao':
-          return b.avaliacao - a.avaliacao
+          return b.rating - a.rating
         case 'tempo':
-          return parseInt(a.tempoEntrega.split('-')[0]) - parseInt(b.tempoEntrega.split('-')[0])
+          // Extrair o primeiro número do tempo de entrega (ex: "30-45 min" -> 30)
+          const tempoA = parseInt(a.deliveryTime.split('-')[0]) || 0
+          const tempoB = parseInt(b.deliveryTime.split('-')[0]) || 0
+          return tempoA - tempoB
         case 'taxa':
-          return parseFloat(a.taxaEntrega.replace('R$ ', '').replace(',', '.')) -
-            parseFloat(b.taxaEntrega.replace('R$ ', '').replace(',', '.'))
+          return a.deliveryFee - b.deliveryFee
         default:
-          return a.nome.localeCompare(b.nome)
+          return a.name.localeCompare(b.name)
       }
     })
+
+  // Carregar restaurantes por categoria quando o filtro mudar
+  useEffect(() => {
+    if (filtroCategoria) {
+      loadRestaurantsByCategory(filtroCategoria)
+    } else {
+      // Recarregar todos os restaurantes se não há filtro
+      loadRestaurants()
+    }
+  }, [filtroCategoria])
+
+  if (loading) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-12 text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Carregando...</span>
+            </div>
+            <p className="mt-3">Carregando restaurantes...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container py-5">
+        <div className="row justify-content-center">
+          <div className="col-12 text-center">
+            <div className="alert alert-danger">
+              <i className="fas fa-exclamation-triangle me-2"></i>
+              {error}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="container py-5">
@@ -145,26 +126,35 @@ export default function RestaurantesPage() {
               <div key={restaurante.id} className="col-md-6 col-lg-4">
                 <div className="card h-100 border-0 shadow-sm hover-shadow">
                   <div className="position-relative">
-                    <img
-                      src={restaurante.imagem}
-                      className="card-img-top"
-                      alt={restaurante.nome}
-                      style={{ height: '200px', objectFit: 'cover' }}
-                    />
+                    {restaurante.image ? (
+                      <img
+                        src={restaurante.image}
+                        className="card-img-top"
+                        alt={restaurante.name}
+                        style={{ height: '200px', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div
+                        className="card-img-top d-flex align-items-center justify-content-center bg-light"
+                        style={{ height: '200px' }}
+                      >
+                        <i className="fas fa-store fa-3x text-muted"></i>
+                      </div>
+                    )}
                     <div className="position-absolute top-0 end-0 m-2">
                       <span className="badge bg-primary">
                         <i className="fas fa-star me-1"></i>
-                        {restaurante.avaliacao}
+                        {restaurante.rating.toFixed(1)}
                       </span>
                     </div>
                   </div>
                   <div className="card-body">
-                    <h5 className="card-title">{restaurante.nome}</h5>
+                    <h5 className="card-title">{restaurante.name}</h5>
                     <p className="text-muted mb-2">
                       <i className="fas fa-utensils me-1"></i>
-                      {restaurante.categoria}
+                      {restaurante.category}
                     </p>
-                    <p className="card-text small">{restaurante.descricao}</p>
+                    <p className="card-text small">{restaurante.address}</p>
 
                     <div className="row text-center mb-3">
                       <div className="col-4">
@@ -172,21 +162,21 @@ export default function RestaurantesPage() {
                           <i className="fas fa-clock me-1"></i>
                           Entrega
                         </small>
-                        <small className="fw-bold">{restaurante.tempoEntrega}</small>
+                        <small className="fw-bold">{restaurante.deliveryTime}</small>
                       </div>
                       <div className="col-4">
                         <small className="text-muted d-block">
                           <i className="fas fa-motorcycle me-1"></i>
                           Taxa
                         </small>
-                        <small className="fw-bold">{restaurante.taxaEntrega}</small>
+                        <small className="fw-bold">R$ {restaurante.deliveryFee.toFixed(2)}</small>
                       </div>
                       <div className="col-4">
                         <small className="text-muted d-block">
                           <i className="fas fa-star me-1"></i>
                           Avaliação
                         </small>
-                        <small className="fw-bold">{restaurante.avaliacao}</small>
+                        <small className="fw-bold">{restaurante.rating.toFixed(1)}</small>
                       </div>
                     </div>
 
@@ -217,7 +207,7 @@ export default function RestaurantesPage() {
           <div className="row mt-5 pt-5 border-top">
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-store fa-2x text-primary mb-2"></i>
-              <h4>{mockRestaurantes.length}+</h4>
+              <h4>{restaurants.length}</h4>
               <small className="text-secondary">Restaurantes</small>
             </div>
             <div className="col-md-3 text-center mb-3">
@@ -227,12 +217,27 @@ export default function RestaurantesPage() {
             </div>
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-star fa-2x text-primary mb-2"></i>
-              <h4>4.7</h4>
+              <h4>
+                {restaurants.length > 0
+                  ? (restaurants.reduce((acc, r) => acc + r.rating, 0) / restaurants.length).toFixed(1)
+                  : '0.0'
+                }
+              </h4>
               <small className="text-secondary">Avaliação Média</small>
             </div>
             <div className="col-md-3 text-center mb-3">
               <i className="fas fa-clock fa-2x text-primary mb-2"></i>
-              <h4>30 min</h4>
+              <h4>
+                {restaurants.length > 0
+                  ? Math.round(
+                    restaurants.reduce((acc, r) => {
+                      const tempo = parseInt(r.deliveryTime.split('-')[0]) || 0
+                      return acc + tempo
+                    }, 0) / restaurants.length
+                  ) + ' min'
+                  : '0 min'
+                }
+              </h4>
               <small className="text-secondary">Tempo Médio</small>
             </div>
           </div>

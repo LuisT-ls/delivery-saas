@@ -14,7 +14,12 @@ export default function RestaurantForm() {
   const [formData, setFormData] = useState<RestaurantFormData>({
     name: '',
     address: '',
-    phone: ''
+    phone: '',
+    category: '',
+    deliveryFee: 0,
+    deliveryTime: '',
+    rating: 0,
+    image: ''
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -26,7 +31,12 @@ export default function RestaurantForm() {
       setFormData({
         name: restaurant.name || '',
         address: restaurant.address || '',
-        phone: restaurant.phone || ''
+        phone: restaurant.phone || '',
+        category: restaurant.category || '',
+        deliveryFee: restaurant.deliveryFee || 0,
+        deliveryTime: restaurant.deliveryTime || '',
+        rating: restaurant.rating || 0,
+        image: restaurant.image || ''
       });
       setIsEditing(true);
     }
@@ -62,7 +72,7 @@ export default function RestaurantForm() {
     return `(${limitedNumbers.slice(0, 2)}) ${limitedNumbers.slice(2, 3)} ${limitedNumbers.slice(3, 7)}-${limitedNumbers.slice(7)}`;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
     // Formatação especial para o campo de telefone
@@ -71,6 +81,11 @@ export default function RestaurantForm() {
       setFormData(prev => ({
         ...prev,
         [name]: formattedValue
+      }));
+    } else if (name === 'deliveryFee' || name === 'rating') {
+      setFormData(prev => ({
+        ...prev,
+        [name]: parseFloat(value) || 0
       }));
     } else {
       setFormData(prev => ({
@@ -118,6 +133,26 @@ export default function RestaurantForm() {
     const phoneRegex = /^\(\d{2}\) \d \d{4}-\d{4}$/;
     if (!phoneRegex.test(formData.phone.trim())) {
       setMessage({ type: 'error', text: 'Telefone deve estar no formato (71) 9 9545-4555' });
+      return;
+    }
+
+    if (!formData.category.trim()) {
+      setMessage({ type: 'error', text: 'Categoria do restaurante é obrigatória' });
+      return;
+    }
+
+    if (formData.deliveryFee < 0) {
+      setMessage({ type: 'error', text: 'Taxa de entrega não pode ser negativa' });
+      return;
+    }
+
+    if (!formData.deliveryTime.trim()) {
+      setMessage({ type: 'error', text: 'Tempo de entrega é obrigatório' });
+      return;
+    }
+
+    if (formData.rating < 0 || formData.rating > 5) {
+      setMessage({ type: 'error', text: 'Avaliação deve estar entre 0 e 5' });
       return;
     }
 
@@ -232,7 +267,7 @@ export default function RestaurantForm() {
                   />
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-3">
                   <label htmlFor="phone" className="form-label h6-responsive">
                     <i className="fas fa-phone"></i>
                     Telefone/WhatsApp
@@ -247,6 +282,109 @@ export default function RestaurantForm() {
                     placeholder="Digite apenas os números (ex: 71995454555)"
                     required
                   />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="category" className="form-label h6-responsive">
+                    <i className="fas fa-utensils"></i>
+                    Categoria do Restaurante
+                  </label>
+                  <select
+                    className="form-select w-100"
+                    id="category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Selecione uma categoria</option>
+                    <option value="Italiana">Italiana</option>
+                    <option value="Japonesa">Japonesa</option>
+                    <option value="Hambúrgueres">Hambúrgueres</option>
+                    <option value="Pizzaria">Pizzaria</option>
+                    <option value="Churrascaria">Churrascaria</option>
+                    <option value="Doces e Sobremesas">Doces e Sobremesas</option>
+                    <option value="Brasileira">Brasileira</option>
+                    <option value="Árabe">Árabe</option>
+                    <option value="Chinesa">Chinesa</option>
+                    <option value="Mexicana">Mexicana</option>
+                    <option value="Vegetariana">Vegetariana</option>
+                    <option value="Vegana">Vegana</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="deliveryFee" className="form-label h6-responsive">
+                      <i className="fas fa-motorcycle"></i>
+                      Taxa de Entrega (R$)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      className="form-control w-100"
+                      id="deliveryFee"
+                      name="deliveryFee"
+                      value={formData.deliveryFee}
+                      onChange={handleInputChange}
+                      placeholder="0.00"
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="deliveryTime" className="form-label h6-responsive">
+                      <i className="fas fa-clock"></i>
+                      Tempo de Entrega
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control w-100"
+                      id="deliveryTime"
+                      name="deliveryTime"
+                      value={formData.deliveryTime}
+                      onChange={handleInputChange}
+                      placeholder="ex: 30-45 min"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="rating" className="form-label h6-responsive">
+                      <i className="fas fa-star"></i>
+                      Avaliação Inicial (0-5)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="5"
+                      className="form-control w-100"
+                      id="rating"
+                      name="rating"
+                      value={formData.rating}
+                      onChange={handleInputChange}
+                      placeholder="0.0"
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="image" className="form-label h6-responsive">
+                      <i className="fas fa-image"></i>
+                      URL da Imagem
+                    </label>
+                    <input
+                      type="url"
+                      className="form-control w-100"
+                      id="image"
+                      name="image"
+                      value={formData.image}
+                      onChange={handleInputChange}
+                      placeholder="https://exemplo.com/imagem.jpg"
+                    />
+                  </div>
                 </div>
 
                 <div className="d-grid d-md-flex justify-content-md-end">

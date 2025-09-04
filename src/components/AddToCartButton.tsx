@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useCart } from '@/lib/use-cart';
-import { MenuItem } from '@/lib/types';
+import { MenuItem } from '@/types/restaurant';
 
 interface AddToCartButtonProps {
   item: MenuItem;

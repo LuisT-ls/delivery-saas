@@ -10,6 +10,7 @@ import LoginScreen from '@/components/admin/LoginScreen';
 import LoadingScreen from '@/components/admin/LoadingScreen';
 import NotificationSound from '@/components/admin/NotificationSound';
 import StatsCard from '@/components/admin/StatsCard';
+import MenuManagement from '@/components/admin/MenuManagement';
 import { useOrdersRealtime, useNewOrderAlert } from '@/lib/admin-hooks';
 import { usePushNotifications } from '@/lib/use-push-notifications';
 import { pushNotificationService } from '@/lib/push-notifications';
@@ -20,6 +21,7 @@ export default function AdminPage() {
   const { user, isAuthenticated } = useAuthContext();
   const { hasAccess, restaurantId, restaurant, loading: adminLoading, error: adminError } = useAdminAccess();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu'>('orders');
 
   const { orders, loading: ordersLoading, error } = useOrdersRealtime(restaurantId);
   const { newOrderAlert, setNewOrderAlert } = useNewOrderAlert(orders);
@@ -237,8 +239,48 @@ export default function AdminPage() {
             </div>
           )}
 
-          <StatsCard orders={orders} />
-          <OrderBoard orders={orders} />
+          {/* Navegação por Abas */}
+          <div className="row mb-4">
+            <div className="col-12">
+              <ul className="nav nav-tabs">
+                <li className="nav-item">
+                  <button
+                    className={`nav-link ${activeTab === 'orders' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('orders')}
+                  >
+                    <i className="fas fa-shopping-cart me-2"></i>
+                    Pedidos
+                    {orders.filter(o => o.status === 'pending').length > 0 && (
+                      <span className="badge bg-warning ms-2">
+                        {orders.filter(o => o.status === 'pending').length}
+                      </span>
+                    )}
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className={`nav-link ${activeTab === 'menu' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('menu')}
+                  >
+                    <i className="fas fa-utensils me-2"></i>
+                    Gerenciar Pratos
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Conteúdo das Abas */}
+          {activeTab === 'orders' && (
+            <>
+              <StatsCard orders={orders} />
+              <OrderBoard orders={orders} />
+            </>
+          )}
+
+          {activeTab === 'menu' && restaurantId && (
+            <MenuManagement restaurantId={restaurantId} />
+          )}
         </div>
       </main>
     </div>

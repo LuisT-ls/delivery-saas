@@ -1,6 +1,6 @@
 'use client';
 
-import { MenuItem } from '@/lib/types';
+import { MenuItem } from '@/types/restaurant';
 import { formatPrice } from '@/lib/utils';
 import AddToCartButton from './AddToCartButton';
 

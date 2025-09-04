@@ -54,6 +54,11 @@ export function useRestaurant(userId: string | undefined) {
         name: formData.name.trim(),
         address: formData.address.trim(),
         phone: formData.phone.trim(),
+        category: formData.category.trim(),
+        deliveryFee: formData.deliveryFee,
+        deliveryTime: formData.deliveryTime.trim(),
+        rating: formData.rating,
+        image: formData.image || '',
         ownerId: userId,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -107,6 +112,11 @@ export function useRestaurant(userId: string | undefined) {
         name: formData.name.trim(),
         address: formData.address.trim(),
         phone: formData.phone.trim(),
+        category: formData.category.trim(),
+        deliveryFee: formData.deliveryFee,
+        deliveryTime: formData.deliveryTime.trim(),
+        rating: formData.rating,
+        image: formData.image || '',
         updatedAt: serverTimestamp()
       };
 
