@@ -6,7 +6,8 @@ import {
   onAuthStateChanged,
   User,
   UserCredential,
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from 'firebase/auth';
 import { 
   doc, 
@@ -48,6 +49,25 @@ export const signInAnonymouslyUser = async (): Promise<UserCredential> => {
   } catch (error) {
     console.error('Erro no login anônimo:', error);
     throw error;
+  }
+};
+
+/**
+ * Login com email e senha
+ */
+export const signInWithEmail = async (email: string, password: string): Promise<UserCredential> => {
+  try {
+    secureLog('Tentativa de login iniciada', { email: sanitizeForLogging({ email }).email });
+    
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    
+    secureLog('Login realizado com sucesso', { uid: result.user.uid });
+    
+    return result;
+  } catch (error: any) {
+    const authError = mapFirebaseAuthError(error);
+    secureLog('Erro no login', { code: authError.code, message: authError.message });
+    throw authError;
   }
 };
 

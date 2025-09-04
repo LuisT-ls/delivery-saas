@@ -9,6 +9,7 @@ interface AuthContextType {
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
   loginAnonymously: () => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
   signUp: (data: SignUpData) => Promise<void>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;

@@ -8,7 +8,8 @@ import {
   signOutUser, 
   onAuthStateChange,
   getCurrentUser,
-  signUpWithEmail
+  signUpWithEmail,
+  signInWithEmail
 } from './auth';
 import { SignUpData, AuthError } from './types';
 
@@ -49,6 +50,18 @@ export function useAuth() {
     }
   };
 
+  const loginWithEmail = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      await signInWithEmail(email, password);
+    } catch (error) {
+      console.error('Erro no login com email:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signUp = async (data: SignUpData): Promise<void> => {
     try {
       setLoading(true);
@@ -78,6 +91,7 @@ export function useAuth() {
     loading,
     loginWithGoogle,
     loginAnonymously,
+    loginWithEmail,
     signUp,
     logout,
     isAuthenticated: !!user
