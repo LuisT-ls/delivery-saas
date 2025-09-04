@@ -21,6 +21,19 @@ export function useImageUpload() {
       return null;
     }
 
+    // Verificar se o Firebase Storage está configurado corretamente
+    if (!storage) {
+      setError('Firebase Storage não está configurado. Verifique as configurações.');
+      return null;
+    }
+
+    // Verificar se estamos usando configurações mock em produção
+    const storageUrl = storage.app.options.storageBucket;
+    if (storageUrl && storageUrl.includes('mock-project')) {
+      setError('Firebase não configurado em produção. Configure as variáveis de ambiente no Vercel.');
+      return null;
+    }
+
     // Validar tipo de arquivo
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
     if (!allowedTypes.includes(file.type)) {

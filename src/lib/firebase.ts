@@ -4,6 +4,15 @@ import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
 
+// Verificar se as variáveis de ambiente estão configuradas
+const isProduction = process.env.NODE_ENV === 'production';
+const hasFirebaseConfig = process.env.NEXT_PUBLIC_FIREBASE_API_KEY && 
+                         process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+
+if (isProduction && !hasFirebaseConfig) {
+  console.error('❌ Firebase não configurado em produção! Configure as variáveis de ambiente no Vercel.');
+}
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'mock_api_key_for_build',
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'mock-project.firebaseapp.com',
