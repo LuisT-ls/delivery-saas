@@ -15,11 +15,11 @@ export function useRestaurants() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Debug log
-  console.log('useRestaurants hook initialized', { 
-    hasDb: !!db, 
-    isClient: typeof window !== 'undefined' 
-  });
+  // Debug log (removido para evitar spam no console)
+  // console.log('useRestaurants hook initialized', { 
+  //   hasDb: !!db, 
+  //   isClient: typeof window !== 'undefined' 
+  // });
 
   // Carregar todos os restaurantes
   const loadRestaurants = async () => {
@@ -40,7 +40,19 @@ export function useRestaurants() {
       const restaurantsList: Restaurant[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data() as Omit<Restaurant, 'id'>;
-        restaurantsList.push({ ...data, id: doc.id });
+        // Garantir que todos os campos obrigatórios tenham valores padrão
+        const restaurantData: Restaurant = {
+          ...data,
+          id: doc.id,
+          rating: data.rating || 0,
+          deliveryFee: data.deliveryFee || 0,
+          deliveryTime: data.deliveryTime || '0-0 min',
+          category: data.category || 'Outros',
+          name: data.name || 'Restaurante sem nome',
+          address: data.address || 'Endereço não informado',
+          phone: data.phone || 'Telefone não informado'
+        };
+        restaurantsList.push(restaurantData);
       });
       
       setRestaurants(restaurantsList);
@@ -78,7 +90,19 @@ export function useRestaurants() {
       const restaurantsList: Restaurant[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data() as Omit<Restaurant, 'id'>;
-        restaurantsList.push({ ...data, id: doc.id });
+        // Garantir que todos os campos obrigatórios tenham valores padrão
+        const restaurantData: Restaurant = {
+          ...data,
+          id: doc.id,
+          rating: data.rating || 0,
+          deliveryFee: data.deliveryFee || 0,
+          deliveryTime: data.deliveryTime || '0-0 min',
+          category: data.category || 'Outros',
+          name: data.name || 'Restaurante sem nome',
+          address: data.address || 'Endereço não informado',
+          phone: data.phone || 'Telefone não informado'
+        };
+        restaurantsList.push(restaurantData);
       });
       
       setRestaurants(restaurantsList);

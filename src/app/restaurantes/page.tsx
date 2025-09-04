@@ -21,14 +21,14 @@ export default function RestaurantesPage() {
     .sort((a, b) => {
       switch (ordenacao) {
         case 'avaliacao':
-          return b.rating - a.rating
+          return (b.rating || 0) - (a.rating || 0)
         case 'tempo':
           // Extrair o primeiro número do tempo de entrega (ex: "30-45 min" -> 30)
-          const tempoA = parseInt(a.deliveryTime?.split('-')[0]) || 0
-          const tempoB = parseInt(b.deliveryTime?.split('-')[0]) || 0
+          const tempoA = parseInt((a.deliveryTime || '0-0').split('-')[0]) || 0
+          const tempoB = parseInt((b.deliveryTime || '0-0').split('-')[0]) || 0
           return tempoA - tempoB
         case 'taxa':
-          return a.deliveryFee - b.deliveryFee
+          return (a.deliveryFee || 0) - (b.deliveryFee || 0)
         default:
           return a.name.localeCompare(b.name)
       }
@@ -169,7 +169,7 @@ export default function RestaurantesPage() {
                     <div className="position-absolute top-0 end-0 m-2">
                       <span className="badge bg-primary">
                         <i className="fas fa-star me-1"></i>
-                        {restaurante.rating.toFixed(1)}
+                        {restaurante.rating ? restaurante.rating.toFixed(1) : '0.0'}
                       </span>
                     </div>
                   </div>
@@ -194,14 +194,14 @@ export default function RestaurantesPage() {
                           <i className="fas fa-motorcycle me-1"></i>
                           Taxa
                         </small>
-                        <small className="fw-bold">R$ {restaurante.deliveryFee.toFixed(2)}</small>
+                        <small className="fw-bold">R$ {restaurante.deliveryFee ? restaurante.deliveryFee.toFixed(2) : '0.00'}</small>
                       </div>
                       <div className="col-4">
                         <small className="text-muted d-block">
                           <i className="fas fa-star me-1"></i>
                           Avaliação
                         </small>
-                        <small className="fw-bold">{restaurante.rating.toFixed(1)}</small>
+                        <small className="fw-bold">{restaurante.rating ? restaurante.rating.toFixed(1) : '0.0'}</small>
                       </div>
                     </div>
 
@@ -244,7 +244,7 @@ export default function RestaurantesPage() {
               <i className="fas fa-star fa-2x text-primary mb-2"></i>
               <h4>
                 {restaurants.length > 0
-                  ? (restaurants.reduce((acc, r) => acc + r.rating, 0) / restaurants.length).toFixed(1)
+                  ? (restaurants.reduce((acc, r) => acc + (r.rating || 0), 0) / restaurants.length).toFixed(1)
                   : '0.0'
                 }
               </h4>
@@ -256,7 +256,7 @@ export default function RestaurantesPage() {
                 {restaurants.length > 0
                   ? Math.round(
                     restaurants.reduce((acc, r) => {
-                      const tempo = parseInt(r.deliveryTime.split('-')[0]) || 0
+                      const tempo = parseInt((r.deliveryTime || '0-0').split('-')[0]) || 0
                       return acc + tempo
                     }, 0) / restaurants.length
                   ) + ' min'
